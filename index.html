@@ -401,7 +401,7 @@
 
   <div class="countdown">
     <div>
-      <div class="label">Morning Session — 7:30 AM to 1:00 PM</div>
+      <div class="label">Morning Session — 7:30 AM to 12:10 PM</div>
       <div class="value" id="countdownValue">Calculating…</div>
     </div>
     <div class="status-pill" id="statusPill">—</div>
@@ -415,6 +415,7 @@
   <button data-view="attendance">Attendance</button>
   <button data-view="notes">Notes</button>
   <button data-view="classmates">Classmates</button>
+  <button data-view="absence">Report Absence</button>
 </nav>
 
 <main>
@@ -438,13 +439,57 @@
 
   <!-- ===================== TIMETABLE ===================== -->
   <section class="view" id="view-timetable">
-    <h2 class="section-title">Weekly Timetable <span>morning shift, 1st year DIT</span></h2>
-    <table class="timetable">
+    <h2 class="section-title">Weekly Timetable <span>shared with the class — anyone can edit when it changes</span></h2>
+
+    <div id="ttSetupNotice" class="empty" style="display:none; margin-bottom:16px;">
+      Timetable needs the same one-time Firebase setup as the Classmates Board (see that tab) before edits sync for everyone.
+      Until then, changes here only save on this device.
+    </div>
+
+    <div class="add-row">
+      <button class="ghost" id="ttEditToggle" onclick="toggleTimetableEdit()">✏️ Edit Timetable</button>
+      <button class="ghost" onclick="addTimetablePeriod()">+ Add Period</button>
+    </div>
+
+    <table class="timetable" id="timetableTable">
       <thead>
-        <tr><th>Day</th><th>7:30 – 9:00</th><th>9:00 – 10:30</th><th>10:30 – 12:00</th><th>12:00 – 1:00</th></tr>
+        <tr id="timetableHeadRow"><th>Day</th></tr>
       </thead>
       <tbody id="timetableBody"></tbody>
     </table>
+
+    <h2 class="section-title" style="margin-top:24px;">Schedule Changes <span>one-off changes — cancellations, moved classes, date-specific notes</span></h2>
+    <div class="add-row">
+      <input type="date" id="scDate">
+      <input type="text" id="scNote" placeholder="e.g. Web Dev moved to 9am, or class cancelled" style="flex:1;">
+      <button class="primary" onclick="addScheduleChange()">Add Change</button>
+    </div>
+    <div class="att-list" id="scList"></div>
+  </section>
+
+  <!-- ===================== REPORT ABSENCE ===================== -->
+  <section class="view" id="view-absence">
+    <h2 class="section-title" style="color:var(--red);">🤒 Report Sick / Absence <span style="color:var(--muted);">visible to the whole class</span></h2>
+    <p style="color:var(--muted); font-size:0.85rem; margin-top:-8px;">
+      If you can't make it to college, post here so classmates know — and please also let the principal or your instructor know directly if possible.
+    </p>
+
+    <div id="absSetupNotice" class="empty" style="display:none; margin-bottom:16px;">
+      This needs the same one-time Firebase setup as the Classmates Board before it's visible to everyone.
+    </div>
+
+    <div class="add-row">
+      <input type="text" id="absName" placeholder="Your name">
+      <input type="date" id="absDate">
+    </div>
+    <div class="add-row">
+      <textarea id="absReason" placeholder="Reason (e.g. fever, family emergency)…" style="flex:1; min-height:50px;"></textarea>
+    </div>
+    <div class="add-row">
+      <button class="primary" style="background:var(--red); border-color:var(--red);" onclick="reportAbsence()">Submit Report</button>
+    </div>
+
+    <div class="att-list" id="absList" style="margin-top:16px;"></div>
   </section>
 
   <!-- ===================== GPA CALCULATOR ===================== -->
@@ -519,12 +564,14 @@
 
     <div class="add-row">
       <input type="text" id="postName" placeholder="Your name">
-      <select id="postCategory">
+      <select id="postCategory" onchange="onPostCategoryChange()">
+        <option value="Assignment">📚 Assignment (teacher/anyone)</option>
         <option value="Question">❓ Question</option>
         <option value="Resource">📎 Resource</option>
         <option value="Help">🤝 Offering Help</option>
         <option value="Update">📢 Update</option>
       </select>
+      <input type="date" id="postDueDate" style="display:none;">
     </div>
     <div class="add-row">
       <textarea id="postMessage" placeholder="Ask something, share a note, or offer help…" style="flex:1; min-height:60px;"></textarea>
@@ -567,6 +614,39 @@ const Store = {
   }
 };
 
+/* ---------- Firebase (shared data: Classmates Board, Timetable, Absence Reports) ---------- */
+// PASTE YOUR OWN FIREBASE CONFIG HERE (see setup steps shown in the Classmates tab).
+// Leaving this as-is keeps every shared feature in "setup needed" mode — nothing breaks.
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_ID",
+  appId: "PASTE_APP_ID"
+};
+
+let db = null;
+const firebaseReady = firebaseConfig.apiKey !== "PASTE_YOUR_KEY";
+
+if (firebaseReady){
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  } catch(e){
+    console.error('Firebase init failed:', e);
+  }
+}
+// Show "setup needed" notices on every shared-feature tab if not configured yet.
+function showSetupNoticesIfNeeded(){
+  if (firebaseReady) return;
+  ['fbSetupNotice','ttSetupNotice','absSetupNotice'].forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'block';
+  });
+}
+showSetupNoticesIfNeeded();
+
 /* ---------- Live clock + session countdown ---------- */
 function pad(n){ return n.toString().padStart(2,'0'); }
 
@@ -578,7 +658,7 @@ function updateClock(){
     now.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
 
   const start = new Date(now); start.setHours(7,30,0,0);
-  const end   = new Date(now); end.setHours(13,0,0,0);
+  const end   = new Date(now); end.setHours(12,10,0,0);
   const pill = document.getElementById('statusPill');
   const val  = document.getElementById('countdownValue');
 
@@ -662,30 +742,135 @@ function addTask(){
 }
 renderTasks();
 
-/* ---------- TIMETABLE ---------- */
-const timetable = [
-  { day:'Monday',    slots:['Web Development','C++ Programming','Web Development Lab','—'] },
-  { day:'Tuesday',   slots:['C++ Programming','Web Development','C++ Lab','—'] },
-  { day:'Wednesday', slots:['Web Development','English','C++ Programming','—'] },
-  { day:'Thursday',  slots:['C++ Programming','Web Development Lab','Mathematics','—'] },
-  { day:'Friday',    slots:['Web Development','C++ Programming','Islamiat/Ethics','—'] }
-];
+/* ---------- TIMETABLE (shared, editable) ---------- */
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
+const defaultTimetable = {
+  periods: ['7:30–8:20','8:20–9:10','9:10–10:00','10:00–10:50','10:50–12:10'],
+  schedule: {
+    Monday:    ['Web Development','C++ Programming','Web Development Lab','Mathematics','—'],
+    Tuesday:   ['C++ Programming','Web Development','C++ Lab','English','—'],
+    Wednesday: ['Web Development','English','C++ Programming','Mathematics','—'],
+    Thursday:  ['C++ Programming','Web Development Lab','Mathematics','English','—'],
+    Friday:    ['Web Development','C++ Programming','Islamiat/Ethics','—','—']
+  }
+};
+let timetableData = Store.get('timetableLocal', defaultTimetable);
+let ttEditing = false;
+
 function classForSubject(s){
   if (s.includes('Web')) return 'subject-webdev';
   if (s.includes('C++')) return 'subject-cpp';
   return '';
 }
+
 function renderTimetable(){
+  const headRow = document.getElementById('timetableHeadRow');
+  headRow.innerHTML = '<th>Day</th>' + timetableData.periods.map((p,i)=>
+    ttEditing
+      ? `<th><input type="text" value="${p}" style="width:90px; font-size:0.75rem;" onchange="updatePeriodLabel(${i}, this.value)"></th>`
+      : `<th>${p}</th>`
+  ).join('');
+
   const body = document.getElementById('timetableBody');
   body.innerHTML = '';
-  for (const row of timetable){
+  for (const day of DAYS){
+    const row = timetableData.schedule[day] || timetableData.periods.map(()=> '—');
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td><strong>${row.day}</strong></td>` +
-      row.slots.map(s => `<td class="${classForSubject(s)}">${s}</td>`).join('');
+    tr.innerHTML = `<td><strong>${day}</strong></td>` +
+      row.map((s,i) => ttEditing
+        ? `<td><input type="text" value="${s}" style="width:100px; font-size:0.78rem;" onchange="updateScheduleCell('${day}',${i},this.value)"></td>`
+        : `<td class="${classForSubject(s)}">${s}</td>`
+      ).join('');
     body.appendChild(tr);
   }
 }
-renderTimetable();
+
+function saveTimetable(){
+  Store.set('timetableLocal', timetableData);
+  if (db){
+    db.collection('timetable').doc('current').set(timetableData).catch(e=> console.error(e));
+  }
+}
+function updatePeriodLabel(index, value){
+  timetableData.periods[index] = value;
+  saveTimetable();
+}
+function updateScheduleCell(day, index, value){
+  if (!timetableData.schedule[day]) timetableData.schedule[day] = timetableData.periods.map(()=> '—');
+  timetableData.schedule[day][index] = value;
+  saveTimetable();
+}
+function addTimetablePeriod(){
+  timetableData.periods.push('New Period');
+  for (const day of DAYS){
+    if (!timetableData.schedule[day]) timetableData.schedule[day] = [];
+    timetableData.schedule[day].push('—');
+  }
+  saveTimetable();
+  renderTimetable();
+}
+function toggleTimetableEdit(){
+  ttEditing = !ttEditing;
+  document.getElementById('ttEditToggle').textContent = ttEditing ? '✅ Done Editing' : '✏️ Edit Timetable';
+  renderTimetable();
+}
+
+if (db){
+  db.collection('timetable').doc('current').onSnapshot(doc=>{
+    if (doc.exists){
+      timetableData = doc.data();
+      Store.set('timetableLocal', timetableData);
+      renderTimetable();
+    } else {
+      // First time — seed Firestore with the default/local timetable.
+      db.collection('timetable').doc('current').set(timetableData).catch(e=> console.error(e));
+    }
+  }, err=> console.error(err));
+} else {
+  renderTimetable();
+}
+
+/* ---------- SCHEDULE CHANGES LOG (shared) ---------- */
+let scheduleChanges = Store.get('scheduleChanges', []);
+
+function renderScheduleChanges(){
+  const list = document.getElementById('scList');
+  const sorted = [...scheduleChanges].sort((a,b)=> b.date.localeCompare(a.date));
+  if (sorted.length === 0){
+    list.innerHTML = '<div class="empty">No schedule changes posted yet.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  sorted.forEach(change=>{
+    const item = document.createElement('div');
+    item.className = 'att-item';
+    item.innerHTML = `<span class="date">${change.date}</span><span style="color:var(--text); font-size:0.85rem;">${change.note}</span>`;
+    list.appendChild(item);
+  });
+}
+function addScheduleChange(){
+  const date = document.getElementById('scDate').value;
+  const note = document.getElementById('scNote').value.trim();
+  if (!date || !note) return;
+  const entry = { date, note };
+  if (db){
+    db.collection('scheduleChanges').add(entry).catch(e=> alert('Could not save: ' + e.message));
+  } else {
+    scheduleChanges.push(entry);
+    Store.set('scheduleChanges', scheduleChanges);
+    renderScheduleChanges();
+  }
+  document.getElementById('scNote').value = '';
+}
+if (db){
+  db.collection('scheduleChanges').onSnapshot(snapshot=>{
+    scheduleChanges = snapshot.docs.map(d=> d.data());
+    Store.set('scheduleChanges', scheduleChanges);
+    renderScheduleChanges();
+  }, err=> console.error(err));
+} else {
+  renderScheduleChanges();
+}
 
 /* ---------- GPA CALCULATOR ---------- */
 let gpaSubjects = Store.get('gpaSubjects', [
@@ -828,30 +1013,11 @@ function deleteNote(index){
 }
 renderNotes();
 
-/* ---------- CLASSMATES SHARED BOARD (Firebase Firestore) ---------- */
-// PASTE YOUR OWN FIREBASE CONFIG HERE (see setup steps shown in the Classmates tab).
-// Leaving this as-is keeps the board in "setup needed" mode — nothing breaks.
-const firebaseConfig = {
-  apiKey: "PASTE_YOUR_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_ID",
-  appId: "PASTE_APP_ID"
-};
+/* ---------- CLASSMATES SHARED BOARD (uses shared db/firebaseReady from top of script) ---------- */
 
-let db = null;
-const firebaseReady = firebaseConfig.apiKey !== "PASTE_YOUR_KEY";
-
-if (firebaseReady){
-  try{
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-  } catch(e){
-    console.error('Firebase init failed:', e);
-  }
-} else {
-  document.getElementById('fbSetupNotice').style.display = 'block';
+function onPostCategoryChange(){
+  const category = document.getElementById('postCategory').value;
+  document.getElementById('postDueDate').style.display = (category === 'Assignment') ? 'inline-block' : 'none';
 }
 
 function postToBoard(){
@@ -862,13 +1028,15 @@ function postToBoard(){
   const name = document.getElementById('postName').value.trim() || 'Anonymous';
   const category = document.getElementById('postCategory').value;
   const message = document.getElementById('postMessage').value.trim();
+  const dueDate = document.getElementById('postDueDate').value || null;
   if (!message) return;
 
   db.collection('board').add({
-    name, category, message,
+    name, category, message, dueDate,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   }).then(()=>{
     document.getElementById('postMessage').value = '';
+    document.getElementById('postDueDate').value = '';
   }).catch(e=> alert('Could not post: ' + e.message));
 }
 
@@ -888,6 +1056,7 @@ if (db){
       snapshot.forEach(doc=>{
         const p = doc.data();
         const when = p.timestamp ? p.timestamp.toDate().toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : 'just now';
+        const dueLine = p.dueDate ? `<span style="color:var(--amber); font-size:0.78rem;">Due: ${p.dueDate}</span>` : '';
         const item = document.createElement('div');
         item.className = 'att-item';
         item.style.alignItems = 'flex-start';
@@ -900,6 +1069,7 @@ if (db){
           </div>
           <strong>${p.name}</strong>
           <span style="color:var(--text); font-size:0.88rem;">${p.message}</span>
+          ${dueLine}
         `;
         list.appendChild(item);
       });
@@ -909,6 +1079,60 @@ if (db){
     });
 } else {
   renderBoardEmpty('Board is not connected yet — follow the setup steps above, then this will fill in automatically.');
+}
+
+/* ---------- REPORT ABSENCE (shared) ---------- */
+function reportAbsence(){
+  const name = document.getElementById('absName').value.trim() || 'Anonymous';
+  const date = document.getElementById('absDate').value || todayKey();
+  const reason = document.getElementById('absReason').value.trim();
+  if (!reason){ alert('Please add a reason.'); return; }
+
+  const entry = { name, date, reason };
+  if (db){
+    entry.timestamp = firebase.firestore.FieldValue.serverTimestamp();
+    db.collection('absences').add(entry).then(()=>{
+      document.getElementById('absReason').value = '';
+    }).catch(e=> alert('Could not submit: ' + e.message));
+  } else {
+    alert('This needs the Firebase setup (see notice above) before reports are visible to classmates.');
+  }
+}
+function renderAbsenceEmpty(text){
+  document.getElementById('absList').innerHTML = `<div class="empty">${text}</div>`;
+}
+if (db){
+  db.collection('absences').orderBy('timestamp','desc').limit(30)
+    .onSnapshot(snapshot=>{
+      const list = document.getElementById('absList');
+      if (snapshot.empty){
+        renderAbsenceEmpty('No absence reports right now.');
+        return;
+      }
+      list.innerHTML = '';
+      snapshot.forEach(doc=>{
+        const p = doc.data();
+        const item = document.createElement('div');
+        item.className = 'att-item';
+        item.style.alignItems = 'flex-start';
+        item.style.flexDirection = 'column';
+        item.style.gap = '4px';
+        item.style.borderLeft = '3px solid var(--red)';
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <strong>${p.name}</strong>
+            <span class="date">${p.date}</span>
+          </div>
+          <span style="color:var(--text); font-size:0.88rem;">${p.reason}</span>
+        `;
+        list.appendChild(item);
+      });
+    }, err=>{
+      console.error(err);
+      renderAbsenceEmpty('Could not load reports — check your Firestore rules/config.');
+    });
+} else {
+  renderAbsenceEmpty('Not connected yet — follow the Firebase setup steps on the Classmates tab.');
 }
 </script>
 
