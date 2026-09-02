@@ -6,382 +6,548 @@
 <title>DIT Student Hub — Fasih</title>
 <style>
   /* ============================================================
-     DESIGN TOKENS — Color Psychology Palette (v5, toned down)
-     Dark navy base    -> calm, low eye-strain for long study sessions
-     Steel blue         -> professional, dependable, not flashy (personal tools)
-     Muted cadet teal   -> approachable community feel, still subdued (Classmates)
-     Soft green/amber/red -> desaturated so status colors inform, don't shout
+     DESIGN TOKENS — Modern Premium Dark Theme (Refined)
      ============================================================ */
-  :root{
-    --bg:#0b1120;
-    --bg-alt:#080d1a;
-    --panel:#161f33;
-    --panel-hi:#1c273f;
-    --border:#293349;
-    --accent:#4a6fa5;
-    --accent-dim:#3a5980;
-    --social:#5f9ea0;
-    --social-dim:#4c8183;
-    --green:#5cad82;
-    --amber:#d1a04a;
-    --red:#c97676;
-    --text:#dbe2ee;
-    --muted:#8590a6;
-    --radius:10px;
+  :root {
+    --bg: #0b1120;
+    --bg-alt: #070b16;
+    --panel: #141c2e;
+    --panel-hi: #1d283f;
+    --panel-hover: #23304b;
+    --border: #28354e;
+    --border-light: #374766;
+    --accent: #3b82f6;
+    --accent-dim: #2563eb;
+    --accent-glow: rgba(59, 130, 246, 0.25);
+    --social: #0ea5e9;
+    --social-dim: #0284c7;
+    --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.2);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245, 158, 11, 0.2);
+    --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.2);
+    --purple: #8b5cf6;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --radius: 12px;
+    --radius-sm: 8px;
     --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+    --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
   }
 
-  *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; }
-  body{
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
     background:
-      radial-gradient(1200px 500px at 80% -10%, rgba(59,130,246,0.10), transparent 60%),
+      radial-gradient(1200px 600px at 80% -10%, rgba(59, 130, 246, 0.12), transparent 60%),
+      radial-gradient(1000px 500px at 10% 90%, rgba(139, 92, 246, 0.08), transparent 50%),
       var(--bg);
-    color:var(--text);
-    font-family:var(--font);
-    line-height:1.5;
-    min-height:100vh;
-    padding-bottom:60px;
+    color: var(--text);
+    font-family: var(--font);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-bottom: 60px;
   }
-  a{ color:inherit; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
 
-  /* ---------- Header ---------- */
-  header.hero{
-    padding:28px 20px 20px;
-    max-width:1000px;
-    margin:0 auto;
+  /* ---------- Header & Dashboard Hero ---------- */
+  header.hero {
+    padding: 28px 20px 16px;
+    max-width: 1000px;
+    margin: 0 auto;
   }
-  .hero-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:16px;
-    flex-wrap:wrap;
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
   }
-  .hero-id h1{
-    font-size:1.6rem;
-    margin:0 0 4px;
-    letter-spacing:-0.01em;
+  .hero-id h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #ffffff 40%, var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
-  .hero-id p{
-    margin:0;
-    color:var(--muted);
-    font-size:0.92rem;
+  .hero-id p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.92rem;
   }
-  .clock-box{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:14px 18px;
-    text-align:right;
-    min-width:180px;
+  .clock-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    text-align: right;
+    min-width: 180px;
+    box-shadow: var(--shadow);
   }
-  .clock-box .time{
-    font-family:var(--mono);
-    font-size:1.5rem;
+  .clock-box .time {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text);
     font-variant-numeric: tabular-nums;
   }
-  .clock-box .date{
-    color:var(--muted);
-    font-size:0.8rem;
-    margin-top:2px;
+  .clock-box .date {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 2px;
   }
 
   /* ---------- Countdown strip ---------- */
-  .countdown{
-    margin-top:18px;
-    background:linear-gradient(135deg, var(--panel), var(--panel-hi));
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:16px 20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
+  .countdown {
+    margin-top: 18px;
+    background: linear-gradient(135deg, var(--panel), var(--panel-hi));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
   }
-  .countdown .label{ color:var(--muted); font-size:0.85rem; }
-  .countdown .value{
-    font-family:var(--mono);
-    font-size:1.3rem;
-    color:var(--accent);
-    font-weight:600;
+  .countdown .label { color: var(--muted); font-size: 0.85rem; }
+  .countdown .value {
+    font-family: var(--mono);
+    font-size: 1.25rem;
+    color: var(--accent);
+    font-weight: 600;
   }
-  .countdown .status-pill{
-    font-size:0.75rem;
-    padding:4px 10px;
-    border-radius:999px;
-    background:rgba(34,197,94,0.15);
-    color:var(--green);
-    border:1px solid rgba(34,197,94,0.35);
+  .status-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--green);
+    border: 1px solid rgba(16, 185, 129, 0.35);
   }
-  .countdown .status-pill.over{
-    background:rgba(148,163,184,0.12);
-    color:var(--muted);
-    border-color:var(--border);
+  .status-pill.over {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--muted);
+    border-color: var(--border);
   }
+  .status-pill.upcoming {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--amber);
+    border-color: rgba(245, 158, 11, 0.35);
+  }
+
+  /* ---------- Quick Stats Bar ---------- */
+  .dash-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: transform 0.15s, border-color 0.15s;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-light);
+  }
+  .stat-card .title { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-card .val { font-size: 1.3rem; font-weight: 700; font-family: var(--mono); color: var(--text); }
+  .stat-card .sub { font-size: 0.72rem; color: var(--muted); }
 
   /* ---------- Nav tabs ---------- */
-  nav.tabs{
-    max-width:1000px;
-    margin:22px auto 0;
-    padding:0 20px;
-    display:flex;
-    gap:8px;
-    overflow-x:auto;
-    scrollbar-width:none;
+  nav.tabs {
+    max-width: 1000px;
+    margin: 20px auto 0;
+    padding: 0 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
-  nav.tabs::-webkit-scrollbar{ display:none; }
-  nav.tabs button{
-    flex:0 0 auto;
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--muted);
-    padding:9px 16px;
-    border-radius:8px;
-    font-size:0.85rem;
-    cursor:pointer;
-    transition:background 0.15s, color 0.15s, border-color 0.15s;
-    white-space:nowrap;
+  nav.tabs::-webkit-scrollbar { display: none; }
+  nav.tabs button {
+    flex: 0 0 auto;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 9px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+    white-space: nowrap;
   }
-  nav.tabs button:hover{ color:var(--text); }
-  nav.tabs button.active{
-    background:var(--accent);
-    border-color:var(--accent);
-    color:#fff;
+  nav.tabs button:hover { color: var(--text); border-color: var(--border-light); transform: translateY(-1px); }
+  nav.tabs button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 12px var(--accent-glow);
   }
-  nav.tabs button.active[data-view="classmates"]{
-    background:var(--social);
-    border-color:var(--social);
-  }
-
-  main{
-    max-width:1000px;
-    margin:0 auto;
-    padding:20px;
-  }
-  section.view{ display:none; }
-  section.view.active{ display:block; }
-
-  h2.section-title{
-    font-size:1.1rem;
-    margin:0 0 14px;
-    color:var(--text);
-  }
-  h2.section-title span{ color:var(--muted); font-weight:400; font-size:0.85rem; }
-
-  /* ---------- Assignment cards ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
-    gap:14px;
-  }
-  .card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:16px;
-    cursor:pointer;
-    box-shadow:0 2px 8px rgba(0,0,0,0.18);
-    transition:border-color 0.15s, transform 0.15s, box-shadow 0.15s;
-  }
-  .card:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.25); border-color:var(--accent); }
-  .card:active{ transform:scale(0.98); }
-  .card.done{ border-color:var(--green); }
-  .card .tag{
-    font-size:0.7rem;
-    color:var(--accent);
-    margin-bottom:6px;
-    display:block;
-  }
-  .card.done .tag{ color:var(--green); }
-  .card h3{ margin:0 0 6px; font-size:1rem; }
-  .card p{ margin:0 0 10px; color:var(--muted); font-size:0.85rem; }
-  .badge{
-    display:inline-block;
-    font-size:0.72rem;
-    padding:3px 10px;
-    border-radius:999px;
-    background:rgba(59,130,246,0.15);
-    color:var(--accent);
-    border:1px solid rgba(59,130,246,0.35);
-  }
-  .card.done .badge{
-    background:rgba(34,197,94,0.15);
-    color:var(--green);
-    border-color:rgba(34,197,94,0.35);
+  nav.tabs button.active[data-view="classmates"] {
+    background: var(--social);
+    border-color: var(--social);
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.3);
   }
 
-  .add-row{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-  input, select, textarea{
-    background:var(--bg-alt);
-    border:1px solid var(--border);
-    color:var(--text);
-    border-radius:10px;
-    padding:9px 12px;
-    font-family:var(--font);
-    font-size:0.88rem;
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
   }
-  input:focus, select:focus, textarea:focus{ outline:1px solid var(--accent); }
-  button.primary{
-    background:var(--accent);
-    border:1px solid var(--accent);
-    color:#fff;
-    border-radius:10px;
-    padding:9px 16px;
-    font-size:0.88rem;
-    cursor:pointer;
+  section.view { display: none; }
+  section.view.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  button.primary:hover{ background:var(--accent-dim); }
-  button.ghost{
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--muted);
-    border-radius:10px;
-    padding:6px 10px;
-    font-size:0.78rem;
-    cursor:pointer;
+
+  h2.section-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0 0 16px;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
   }
+  h2.section-title span { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+
+  /* ---------- Standard UI controls & forms ---------- */
+  .add-row { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  input, select, textarea {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    font-family: var(--font);
+    font-size: 0.88rem;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  button.primary {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    padding: 9px 16px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button.primary:hover { background: var(--accent-dim); transform: translateY(-1px); }
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  button.ghost:hover { color: var(--text); border-color: var(--border-light); background: rgba(255,255,255,0.03); }
+
+  /* ---------- Progress bar ---------- */
+  .progress-container {
+    width: 100%;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    height: 10px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* ---------- Filter chips ---------- */
+  .filters { display: flex; gap: 6px; margin-bottom: 14px; }
+  .chip {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ---------- Cards ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    position: relative;
+    box-shadow: var(--shadow);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.3); border-color: var(--accent); }
+  .card.done { border-color: var(--green); background: rgba(16, 185, 129, 0.03); }
+  .card .tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 6px;
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(59, 130, 246, 0.12);
+    border-radius: 4px;
+  }
+  .card.done .tag { color: var(--green); background: rgba(16, 185, 129, 0.12); }
+  .card h3 { margin: 6px 0 6px; font-size: 1rem; font-weight: 600; }
+  .card.done h3 { text-decoration: line-through; color: var(--muted); }
+  .card p { margin: 0 0 12px; color: var(--muted); font-size: 0.85rem; }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--accent);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+  }
+  .card.done .badge {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--green);
+    border-color: rgba(16, 185, 129, 0.35);
+  }
+  .card-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 4px;
+  }
+  .btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    line-height: 1;
+    transition: color 0.15s, background 0.15s;
+  }
+  .btn-icon:hover { color: var(--red); background: rgba(239, 68, 68, 0.1); }
 
   /* ---------- Timetable ---------- */
-  table.timetable{
-    width:100%;
-    border-collapse:collapse;
-    background:var(--panel);
-    border-radius:var(--radius);
-    overflow:hidden;
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
   }
-  table.timetable th, table.timetable td{
-    padding:10px 12px;
-    border-bottom:1px solid var(--border);
-    font-size:0.85rem;
-    text-align:left;
+  table.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    min-width: 600px;
   }
-  table.timetable th{
-    color:var(--muted);
-    font-weight:600;
-    font-size:0.78rem;
-    text-transform:uppercase;
-    letter-spacing:0.03em;
-    background:var(--bg-alt);
+  table.timetable th, table.timetable td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    text-align: left;
   }
-  table.timetable tr:last-child td{ border-bottom:none; }
-  .subject-webdev{ color:var(--accent); }
-  .subject-cpp{ color:var(--amber); }
+  table.timetable th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--bg-alt);
+  }
+  table.timetable tr:last-child td { border-bottom: none; }
+  .subject-webdev { color: #60a5fa; font-weight: 500; }
+  .subject-cpp { color: #fbbf24; font-weight: 500; }
+  .subject-math { color: #a78bfa; font-weight: 500; }
+  .subject-english { color: #34d399; font-weight: 500; }
+  .subject-islam { color: #f472b6; font-weight: 500; }
 
   /* ---------- GPA calculator ---------- */
-  .gpa-row{
-    display:grid;
-    grid-template-columns: 1.5fr 1fr 1fr auto;
-    gap:8px;
-    margin-bottom:8px;
-    align-items:center;
+  .gpa-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
   }
-  .gpa-result{
-    margin-top:16px;
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:16px;
-    display:flex;
-    justify-content:space-between;
-    flex-wrap:wrap;
-    gap:16px;
+  .gpa-result {
+    margin-top: 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 16px;
+    box-shadow: var(--shadow);
   }
-  .gpa-result .metric{ text-align:center; }
-  .gpa-result .metric .num{ font-size:1.6rem; font-weight:700; font-family:var(--mono); }
-  .gpa-result .metric .lbl{ color:var(--muted); font-size:0.75rem; margin-top:2px; }
+  .gpa-result .metric { text-align: center; min-width: 90px; }
+  .gpa-result .metric .num { font-size: 1.6rem; font-weight: 700; font-family: var(--mono); color: var(--accent); }
+  .gpa-result .metric .lbl { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
 
   /* ---------- Notes ---------- */
-  .notes-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
-    gap:12px;
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
   }
-  .note-card{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:14px;
-    position:relative;
+  .note-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    position: relative;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
-  .note-card textarea{
-    width:100%;
-    background:transparent;
-    border:none;
-    color:var(--text);
-    resize:vertical;
-    min-height:80px;
-    padding:0;
-    font-size:0.85rem;
+  .note-card input.note-title {
+    background: transparent;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text);
+    padding: 0;
+    width: 85%;
   }
-  .note-card textarea:focus{ outline:none; }
-  .note-del{
-    position:absolute;
-    top:10px; right:10px;
-    background:none;
-    border:none;
-    color:var(--muted);
-    cursor:pointer;
-    font-size:0.9rem;
+  .note-card input.note-title:focus { outline: none; box-shadow: none; border-bottom: 1px solid var(--accent); }
+  .note-card textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    resize: vertical;
+    min-height: 90px;
+    padding: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
   }
+  .note-card textarea:focus { outline: none; box-shadow: none; }
+  .note-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: var(--muted); }
 
   /* ---------- Attendance ---------- */
-  .att-summary{
-    display:flex;
-    gap:14px;
-    margin-bottom:16px;
-    flex-wrap:wrap;
+  .att-summary {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
   }
-  .att-summary .metric{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:12px 18px;
-    text-align:center;
-    flex:1;
-    min-width:100px;
+  .att-summary .metric {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    text-align: center;
+    flex: 1;
+    min-width: 110px;
+    box-shadow: var(--shadow);
   }
-  .att-summary .num{ font-size:1.4rem; font-weight:700; font-family:var(--mono); }
-  .att-summary .num.good{ color:var(--green); }
-  .att-summary .num.warn{ color:var(--amber); }
-  .att-list{ display:flex; flex-direction:column; gap:8px; }
-  .att-item{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:10px;
-    padding:10px 14px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-  .att-item .date{ font-size:0.85rem; color:var(--muted); font-family:var(--mono); }
-  .att-actions button{
-    border:none;
-    padding:5px 12px;
-    border-radius:8px;
-    font-size:0.75rem;
-    cursor:pointer;
-    margin-left:6px;
-  }
-  .btn-present{ background:rgba(34,197,94,0.15); color:var(--green); }
-  .btn-absent{ background:rgba(239,68,68,0.15); color:var(--red); }
-  .btn-present.active{ background:var(--green); color:#04160a; }
-  .btn-absent.active{ background:var(--red); color:#1a0505; }
+  .att-summary .num { font-size: 1.5rem; font-weight: 700; font-family: var(--mono); }
+  .att-summary .num.good { color: var(--green); }
+  .att-summary .num.warn { color: var(--amber); }
+  .att-summary .num.danger { color: var(--red); }
 
-  .empty{
-    color:var(--muted);
-    font-size:0.85rem;
-    padding:20px;
-    text-align:center;
-    border:1px dashed var(--border);
-    border-radius:var(--radius);
+  .att-warning-banner {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .att-warning-banner.show-warn {
+    display: block;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: #fbbf24;
   }
 
-  @media (max-width:520px){
-    .gpa-row{ grid-template-columns:1.3fr 1fr 1fr auto; font-size:0.85rem; }
-    .clock-box{ text-align:left; }
+  .att-list { display: flex; flex-direction: column; gap: 8px; }
+  .att-item {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.15s;
+  }
+  .att-item:hover { border-color: var(--border-light); }
+  .att-item .date { font-size: 0.85rem; color: var(--muted); font-family: var(--mono); }
+  .att-actions button {
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 6px;
+    transition: all 0.15s;
+  }
+  .btn-present { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+  .btn-absent { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+  .btn-present.active { background: var(--green); color: #04160a; font-weight: 600; }
+  .btn-absent.active { background: var(--red); color: #1a0505; font-weight: 600; }
+
+  .empty {
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding: 24px;
+    text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    background: rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 640px) {
+    .gpa-row { grid-template-columns: 1fr 1fr; font-size: 0.85rem; }
+    .clock-box { text-align: left; width: 100%; }
+    .countdown { flex-direction: column; align-items: flex-start; }
+    .dash-stats { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -406,6 +572,30 @@
     </div>
     <div class="status-pill" id="statusPill">—</div>
   </div>
+
+  <!-- Quick Overview Stats -->
+  <div class="dash-stats">
+    <div class="stat-card">
+      <span class="title">Pending Tasks</span>
+      <span class="val" id="statPendingTasks">0</span>
+      <span class="sub" id="statTaskProgress">0% completed</span>
+    </div>
+    <div class="stat-card">
+      <span class="title">Attendance</span>
+      <span class="val" id="statAttendance">0%</span>
+      <span class="sub" id="statAttStatus">PBTE Min: 75%</span>
+    </div>
+    <div class="stat-card">
+      <span class="title">Current GPA</span>
+      <span class="val" id="statGPA">0.0</span>
+      <span class="sub" id="statGrade">Grade: —</span>
+    </div>
+    <div class="stat-card">
+      <span class="title">Next Period</span>
+      <span class="val" id="statNextClass" style="font-size:1.1rem;">Web Dev</span>
+      <span class="sub" id="statDayLabel">Today's Schedule</span>
+    </div>
+  </div>
 </header>
 
 <nav class="tabs">
@@ -422,16 +612,29 @@
 
   <!-- ===================== ASSIGNMENTS ===================== -->
   <section class="view active" id="view-assignments">
-    <h2 class="section-title">Assignment Tracker <span>tap a card to mark complete</span></h2>
+    <h2 class="section-title">Assignment Tracker <span>Click a card to mark complete</span></h2>
 
     <div class="add-row">
-      <input type="text" id="taskTitle" placeholder="Task title">
-      <select id="taskSubject">
+      <input type="text" id="taskTitle" placeholder="Task title" style="flex:2; min-width:180px;">
+      <select id="taskSubject" style="flex:1; min-width:140px;">
         <option value="Web Development">Web Development</option>
         <option value="C++ Programming">C++ Programming</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="English">English</option>
+        <option value="Islamiat/Ethics">Islamiat/Ethics</option>
       </select>
-      <input type="text" id="taskDue" placeholder="Due (e.g. Fri, 5 Sep)">
+      <input type="text" id="taskDue" placeholder="Due (e.g. Fri, 5 Sep)" style="flex:1; min-width:130px;">
       <button class="primary" onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="progress-container">
+      <div class="progress-bar" id="taskProgressBar"></div>
+    </div>
+
+    <div class="filters">
+      <button class="chip active" data-filter="all" onclick="setTaskFilter('all', this)">All Tasks</button>
+      <button class="chip" data-filter="pending" onclick="setTaskFilter('pending', this)">Pending</button>
+      <button class="chip" data-filter="completed" onclick="setTaskFilter('completed', this)">Completed</button>
     </div>
 
     <div class="grid" id="taskGrid"></div>
@@ -442,8 +645,7 @@
     <h2 class="section-title">Weekly Timetable <span>shared with the class — anyone can edit when it changes</span></h2>
 
     <div id="ttSetupNotice" class="empty" style="display:none; margin-bottom:16px;">
-      Timetable needs the same one-time Firebase setup as the Classmates Board (see that tab) before edits sync for everyone.
-      Until then, changes here only save on this device.
+      ℹ️ Timetable currently saved locally. Configured with Firebase auto-sync when credentials are set.
     </div>
 
     <div class="add-row">
@@ -451,17 +653,19 @@
       <button class="ghost" onclick="addTimetablePeriod()">+ Add Period</button>
     </div>
 
-    <table class="timetable" id="timetableTable">
-      <thead>
-        <tr id="timetableHeadRow"><th>Day</th></tr>
-      </thead>
-      <tbody id="timetableBody"></tbody>
-    </table>
+    <div class="table-wrap">
+      <table class="timetable" id="timetableTable">
+        <thead>
+          <tr id="timetableHeadRow"><th>Day</th></tr>
+        </thead>
+        <tbody id="timetableBody"></tbody>
+      </table>
+    </div>
 
-    <h2 class="section-title" style="margin-top:24px;">Schedule Changes <span>one-off changes — cancellations, moved classes, date-specific notes</span></h2>
+    <h2 class="section-title" style="margin-top:28px;">Schedule Changes <span>One-off updates, moved classes, date-specific notes</span></h2>
     <div class="add-row">
       <input type="date" id="scDate">
-      <input type="text" id="scNote" placeholder="e.g. Web Dev moved to 9am, or class cancelled" style="flex:1;">
+      <input type="text" id="scNote" placeholder="e.g. Web Dev moved to 9am, or class cancelled" style="flex:1; min-width:200px;">
       <button class="primary" onclick="addScheduleChange()">Add Change</button>
     </div>
     <div class="att-list" id="scList"></div>
@@ -469,24 +673,20 @@
 
   <!-- ===================== REPORT ABSENCE ===================== -->
   <section class="view" id="view-absence">
-    <h2 class="section-title" style="color:var(--red);">🤒 Report Sick / Absence <span style="color:var(--muted);">visible to the whole class</span></h2>
+    <h2 class="section-title" style="color:var(--red);">🤒 Report Sick / Absence <span style="color:var(--muted);">visible to classmates & faculty</span></h2>
     <p style="color:var(--muted); font-size:0.85rem; margin-top:-8px;">
-      If you can't make it to college, post here so classmates know — and please also let the principal or your instructor know directly if possible.
+      If you can't make it to college, post here so classmates know — and please also let your instructor know directly.
     </p>
 
-    <div id="absSetupNotice" class="empty" style="display:none; margin-bottom:16px;">
-      This needs the same one-time Firebase setup as the Classmates Board before it's visible to everyone.
-    </div>
-
     <div class="add-row">
-      <input type="text" id="absName" placeholder="Your name">
+      <input type="text" id="absName" placeholder="Your name" style="flex:1; min-width:150px;">
       <input type="date" id="absDate">
     </div>
     <div class="add-row">
-      <textarea id="absReason" placeholder="Reason (e.g. fever, family emergency)…" style="flex:1; min-height:50px;"></textarea>
+      <textarea id="absReason" placeholder="Reason (e.g. fever, family emergency, transport issue)…" style="flex:1; min-height:60px;"></textarea>
     </div>
     <div class="add-row">
-      <button class="primary" style="background:var(--red); border-color:var(--red);" onclick="reportAbsence()">Submit Report</button>
+      <button class="primary" style="background:var(--red); border-color:var(--red);" onclick="reportAbsence()">Submit Absence Report</button>
     </div>
 
     <div class="att-list" id="absList" style="margin-top:16px;"></div>
@@ -494,12 +694,24 @@
 
   <!-- ===================== GPA CALCULATOR ===================== -->
   <section class="view" id="view-gpa">
-    <h2 class="section-title">Semester GPA Calculator <span>enter marks obtained / total marks per subject</span></h2>
+    <h2 class="section-title">Semester GPA Calculator <span>Enter credit hours & marks per subject</span></h2>
+
+    <div class="gpa-row" style="font-weight:600; font-size:0.78rem; color:var(--muted); border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:10px;">
+      <div>Subject Name</div>
+      <div>Credit Hours</div>
+      <div>Obtained Marks</div>
+      <div>Total Marks</div>
+      <div>Action</div>
+    </div>
 
     <div id="gpaRows"></div>
-    <button class="ghost" onclick="addGpaRow()">+ Add Subject</button>
+    <button class="ghost" onclick="addGpaRow()" style="margin-top:8px;">+ Add Subject</button>
 
     <div class="gpa-result">
+      <div class="metric">
+        <div class="num" id="gpaVal">0.00</div>
+        <div class="lbl">Weighted GPA (4.0)</div>
+      </div>
       <div class="metric">
         <div class="num" id="gpaPercent">0%</div>
         <div class="lbl">Overall %</div>
@@ -521,17 +733,21 @@
 
   <!-- ===================== ATTENDANCE ===================== -->
   <section class="view" id="view-attendance">
-    <h2 class="section-title">Attendance Log <span>mark today, track your %</span></h2>
+    <h2 class="section-title">Attendance Log <span>Mark daily status, monitor PBTE eligibility (min 75%)</span></h2>
+
+    <div id="attWarningBanner" class="att-warning-banner">
+      ⚠️ <strong>Warning:</strong> Your attendance is currently below the PBTE 75% requirement. Make sure to attend upcoming classes!
+    </div>
 
     <div class="att-summary">
-      <div class="metric"><div class="num good" id="attPresent">0</div><div class="lbl">Present</div></div>
-      <div class="metric"><div class="num warn" id="attAbsent">0</div><div class="lbl">Absent</div></div>
+      <div class="metric"><div class="num good" id="attPresent">0</div><div class="lbl">Present Days</div></div>
+      <div class="metric"><div class="num danger" id="attAbsent">0</div><div class="lbl">Absent Days</div></div>
       <div class="metric"><div class="num" id="attPercent">0%</div><div class="lbl">Attendance %</div></div>
     </div>
 
     <div class="add-row">
       <button class="primary" onclick="markToday('present')">Mark Today Present</button>
-      <button class="ghost" onclick="markToday('absent')">Mark Today Absent</button>
+      <button class="ghost" style="border-color:var(--red); color:var(--red);" onclick="markToday('absent')">Mark Today Absent</button>
     </div>
 
     <div class="att-list" id="attList"></div>
@@ -539,7 +755,7 @@
 
   <!-- ===================== NOTES ===================== -->
   <section class="view" id="view-notes">
-    <h2 class="section-title">Quick Notes <span>saved automatically to this browser</span></h2>
+    <h2 class="section-title">Quick Notes <span>Saved locally in browser</span></h2>
     <div class="add-row">
       <button class="primary" onclick="addNote()">+ New Note</button>
     </div>
@@ -548,24 +764,16 @@
 
   <!-- ===================== CLASSMATES SHARED BOARD ===================== -->
   <section class="view" id="view-classmates" style="--accent:var(--social); --accent-dim:var(--social-dim);">
-    <h2 class="section-title" style="color:var(--social);">🌐 Classmates Board <span style="color:var(--muted);">visible to everyone with this link</span></h2>
+    <h2 class="section-title" style="color:var(--social);">🌐 Classmates Board <span style="color:var(--muted);">Shared updates & discussions</span></h2>
 
     <div id="fbSetupNotice" class="empty" style="display:none; margin-bottom:16px; text-align:left;">
-      <strong>One-time setup needed:</strong> this board needs a free Firebase project to sync between
-      devices (localStorage alone can't share data between your classmates' phones). Steps:
-      <ol style="margin:10px 0 0; padding-left:20px; color:var(--muted);">
-        <li>Go to <span style="color:var(--accent)">console.firebase.google.com</span> → Create Project (free)</li>
-        <li>Build → Firestore Database → Create database → Start in <em>test mode</em></li>
-        <li>Project settings → General → "Your apps" → Web app (&lt;/&gt;) → copy the config object</li>
-        <li>Paste it into <code>firebaseConfig</code> near the top of the script below</li>
-        <li>Re-upload/host this file (GitHub Pages or Netlify, both free) and share that URL with classmates</li>
-      </ol>
+      <strong>Firebase Setup Info:</strong> Operating in local & online fallback mode. To sync live across classmates' phones, add your Firebase config keys in the code.
     </div>
 
     <div class="add-row">
-      <input type="text" id="postName" placeholder="Your name">
-      <select id="postCategory" onchange="onPostCategoryChange()">
-        <option value="Assignment">📚 Assignment (teacher/anyone)</option>
+      <input type="text" id="postName" placeholder="Your name" style="flex:1; min-width:150px;">
+      <select id="postCategory" onchange="onPostCategoryChange()" style="flex:1; min-width:160px;">
+        <option value="Assignment">📚 Assignment</option>
         <option value="Question">❓ Question</option>
         <option value="Resource">📎 Resource</option>
         <option value="Help">🤝 Offering Help</option>
@@ -574,7 +782,7 @@
       <input type="date" id="postDueDate" style="display:none;">
     </div>
     <div class="add-row">
-      <textarea id="postMessage" placeholder="Ask something, share a note, or offer help…" style="flex:1; min-height:60px;"></textarea>
+      <textarea id="postMessage" placeholder="Ask something, share a resource, or post an update…" style="flex:1; min-height:60px;"></textarea>
     </div>
     <div class="add-row">
       <button class="primary" onclick="postToBoard()">Post to Board</button>
@@ -585,38 +793,36 @@
 
 </main>
 
-<!-- Firebase (free tier) — only used for the Classmates shared board.
-     Loaded from Google's CDN, no npm install / no build step needed. -->
+<!-- Firebase JS SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 
 <script>
 /* ============================================================
-   DIT STUDENT HUB — Module 2 upgrade
-   Concepts used throughout (for PBTE exam revision):
-   - Variables & data types (let/const, string, number, array, object)
-   - Functions (declarations, arrow functions, parameters/return)
-   - Loops (for...of, forEach, map) for repeating structures
-   - Conditionals (if/else, ternary) for state-based logic
-   - DOM manipulation (querySelector, createElement, event listeners)
-   - Objects & Arrays as data structures (task list, timetable, notes)
-   - localStorage for persisting data between browser sessions
+   DIT STUDENT HUB — Complete Enhanced Logic & Fallbacks
    ============================================================ */
 
-/* ---------- Utility: persistence layer ---------- */
+/* ---------- Persistence Layer ---------- */
 const Store = {
   get(key, fallback){
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch(e) {
+      console.error('Storage get error:', e);
+      return fallback;
+    }
   },
   set(key, value){
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch(e) {
+      console.error('Storage set error:', e);
+    }
   }
 };
 
-/* ---------- Firebase (shared data: Classmates Board, Timetable, Absence Reports) ---------- */
-// PASTE YOUR OWN FIREBASE CONFIG HERE (see setup steps shown in the Classmates tab).
-// Leaving this as-is keeps every shared feature in "setup needed" mode — nothing breaks.
+/* ---------- Firebase Integration & Fallback ---------- */
 const firebaseConfig = {
   apiKey: "PASTE_YOUR_KEY",
   authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
@@ -627,7 +833,7 @@ const firebaseConfig = {
 };
 
 let db = null;
-const firebaseReady = firebaseConfig.apiKey !== "PASTE_YOUR_KEY";
+const firebaseReady = firebaseConfig.apiKey !== "PASTE_YOUR_KEY" && typeof firebase !== 'undefined';
 
 if (firebaseReady){
   try{
@@ -637,17 +843,17 @@ if (firebaseReady){
     console.error('Firebase init failed:', e);
   }
 }
-// Show "setup needed" notices on every shared-feature tab if not configured yet.
+
 function showSetupNoticesIfNeeded(){
   if (firebaseReady) return;
-  ['fbSetupNotice','ttSetupNotice','absSetupNotice'].forEach(id=>{
+  ['fbSetupNotice','ttSetupNotice'].forEach(id=>{
     const el = document.getElementById(id);
     if (el) el.style.display = 'block';
   });
 }
 showSetupNoticesIfNeeded();
 
-/* ---------- Live clock + session countdown ---------- */
+/* ---------- Clock & Session Countdown ---------- */
 function pad(n){ return n.toString().padStart(2,'0'); }
 
 function updateClock(){
@@ -666,18 +872,21 @@ function updateClock(){
     const diff = start - now;
     val.textContent = formatDiff(diff) + ' until session starts';
     pill.textContent = 'Upcoming';
-    pill.classList.remove('over');
+    pill.className = 'status-pill upcoming';
   } else if (now >= start && now <= end){
     const diff = end - now;
     val.textContent = formatDiff(diff) + ' remaining in session';
     pill.textContent = 'In Session';
-    pill.classList.remove('over');
+    pill.className = 'status-pill';
   } else {
     val.textContent = 'Session ended for today';
     pill.textContent = 'Done';
-    pill.classList.add('over');
+    pill.className = 'status-pill over';
   }
+
+  updateDashboardStats();
 }
+
 function formatDiff(ms){
   const totalSec = Math.floor(ms/1000);
   const h = Math.floor(totalSec/3600);
@@ -686,63 +895,102 @@ function formatDiff(ms){
   return `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
 }
 setInterval(updateClock, 1000);
-updateClock();
 
-/* ---------- Tab navigation ---------- */
+/* ---------- Tab Navigation ---------- */
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('section.view').forEach(v=>v.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    const target = document.getElementById('view-' + btn.dataset.view);
+    if (target) target.classList.add('active');
   });
 });
 
 /* ---------- ASSIGNMENTS ---------- */
+let taskFilter = 'all';
 let tasks = Store.get('tasks', [
-  { title:'HTML Semantic Tags Assignment', subject:'Web Development', due:'Wed, 3 Sep', done:false },
-  { title:'Loops & Arrays Practice Sheet', subject:'C++ Programming', due:'Thu, 4 Sep', done:false }
+  { id: 1, title:'HTML Semantic Tags Assignment', subject:'Web Development', due:'Wed, 3 Sep', done:false },
+  { id: 2, title:'Loops & Arrays Practice Sheet', subject:'C++ Programming', due:'Thu, 4 Sep', done:false },
+  { id: 3, title:'Binary to Decimal Conversion', subject:'Mathematics', due:'Mon, 8 Sep', done:true }
 ]);
+
+function setTaskFilter(filter, el){
+  taskFilter = filter;
+  document.querySelectorAll('.filters .chip').forEach(c=> c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderTasks();
+}
 
 function renderTasks(){
   const grid = document.getElementById('taskGrid');
   grid.innerHTML = '';
-  if (tasks.length === 0){
-    grid.innerHTML = '<div class="empty">No tasks yet — add your first assignment above.</div>';
+
+  const total = tasks.length;
+  const completed = tasks.filter(t => t.done).length;
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+  document.getElementById('taskProgressBar').style.width = percent + '%';
+
+  let filtered = tasks;
+  if (taskFilter === 'pending') filtered = tasks.filter(t => !t.done);
+  if (taskFilter === 'completed') filtered = tasks.filter(t => t.done);
+
+  if (filtered.length === 0){
+    grid.innerHTML = `<div class="empty">No ${taskFilter !== 'all' ? taskFilter : ''} tasks found.</div>`;
     return;
   }
-  tasks.forEach((task, i)=>{
+
+  filtered.forEach((task, index)=>{
     const card = document.createElement('div');
     card.className = 'card' + (task.done ? ' done' : '');
     card.innerHTML = `
+      <div class="card-actions">
+        <button class="btn-icon" title="Delete Task" onclick="deleteTask(event, ${task.id || index})">✕</button>
+      </div>
       <span class="tag">${task.subject}</span>
       <h3>${task.title}</h3>
       <p>Due: ${task.due || 'No date set'}</p>
       <span class="badge">${task.done ? 'Completed ✅' : 'Pending'}</span>
     `;
-    card.addEventListener('click', ()=> toggleTask(i));
+    card.addEventListener('click', (e)=>{
+      if (e.target.closest('.card-actions')) return;
+      toggleTask(task.id || index);
+    });
     grid.appendChild(card);
   });
+
+  updateDashboardStats();
 }
-function toggleTask(index){
-  tasks[index].done = !tasks[index].done;
-  Store.set('tasks', tasks);
-  renderTasks();
+
+function toggleTask(identifier){
+  const task = tasks.find(t => (t.id && t.id === identifier)) || tasks[identifier];
+  if (task) {
+    task.done = !task.done;
+    Store.set('tasks', tasks);
+    renderTasks();
+  }
 }
+
 function addTask(){
   const title = document.getElementById('taskTitle').value.trim();
   if (!title) return;
   const subject = document.getElementById('taskSubject').value;
   const due = document.getElementById('taskDue').value.trim();
-  tasks.push({ title, subject, due, done:false });
+  tasks.push({ id: Date.now(), title, subject, due, done:false });
   Store.set('tasks', tasks);
   document.getElementById('taskTitle').value = '';
   document.getElementById('taskDue').value = '';
   renderTasks();
 }
-renderTasks();
 
-/* ---------- TIMETABLE (shared, editable) ---------- */
+function deleteTask(e, identifier){
+  e.stopPropagation();
+  tasks = tasks.filter((t, i) => (t.id ? t.id !== identifier : i !== identifier));
+  Store.set('tasks', tasks);
+  renderTasks();
+}
+
+/* ---------- TIMETABLE ---------- */
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
 const defaultTimetable = {
   periods: ['7:30–8:20','8:20–9:10','9:10–10:00','10:00–10:50','10:50–12:10'],
@@ -760,6 +1008,9 @@ let ttEditing = false;
 function classForSubject(s){
   if (s.includes('Web')) return 'subject-webdev';
   if (s.includes('C++')) return 'subject-cpp';
+  if (s.includes('Math')) return 'subject-math';
+  if (s.includes('English')) return 'subject-english';
+  if (s.includes('Islam') || s.includes('Ethics')) return 'subject-islam';
   return '';
 }
 
@@ -791,15 +1042,18 @@ function saveTimetable(){
     db.collection('timetable').doc('current').set(timetableData).catch(e=> console.error(e));
   }
 }
+
 function updatePeriodLabel(index, value){
   timetableData.periods[index] = value;
   saveTimetable();
 }
+
 function updateScheduleCell(day, index, value){
   if (!timetableData.schedule[day]) timetableData.schedule[day] = timetableData.periods.map(()=> '—');
   timetableData.schedule[day][index] = value;
   saveTimetable();
 }
+
 function addTimetablePeriod(){
   timetableData.periods.push('New Period');
   for (const day of DAYS){
@@ -809,6 +1063,7 @@ function addTimetablePeriod(){
   saveTimetable();
   renderTimetable();
 }
+
 function toggleTimetableEdit(){
   ttEditing = !ttEditing;
   document.getElementById('ttEditToggle').textContent = ttEditing ? '✅ Done Editing' : '✏️ Edit Timetable';
@@ -822,7 +1077,6 @@ if (db){
       Store.set('timetableLocal', timetableData);
       renderTimetable();
     } else {
-      // First time — seed Firestore with the default/local timetable.
       db.collection('timetable').doc('current').set(timetableData).catch(e=> console.error(e));
     }
   }, err=> console.error(err));
@@ -830,8 +1084,10 @@ if (db){
   renderTimetable();
 }
 
-/* ---------- SCHEDULE CHANGES LOG (shared) ---------- */
-let scheduleChanges = Store.get('scheduleChanges', []);
+/* ---------- SCHEDULE CHANGES ---------- */
+let scheduleChanges = Store.get('scheduleChanges', [
+  { id: 1, date: '2025-09-05', note: 'Web Development Lab moved to 10:00 AM in Room 4' }
+]);
 
 function renderScheduleChanges(){
   const list = document.getElementById('scList');
@@ -841,18 +1097,23 @@ function renderScheduleChanges(){
     return;
   }
   list.innerHTML = '';
-  sorted.forEach(change=>{
+  sorted.forEach((change, i)=>{
     const item = document.createElement('div');
     item.className = 'att-item';
-    item.innerHTML = `<span class="date">${change.date}</span><span style="color:var(--text); font-size:0.85rem;">${change.note}</span>`;
+    item.innerHTML = `
+      <span class="date">${change.date}</span>
+      <span style="color:var(--text); font-size:0.85rem; flex:1; margin:0 12px;">${change.note}</span>
+      <button class="btn-icon" onclick="deleteScheduleChange(${change.id || i})">✕</button>
+    `;
     list.appendChild(item);
   });
 }
+
 function addScheduleChange(){
   const date = document.getElementById('scDate').value;
   const note = document.getElementById('scNote').value.trim();
   if (!date || !note) return;
-  const entry = { date, note };
+  const entry = { id: Date.now(), date, note };
   if (db){
     db.collection('scheduleChanges').add(entry).catch(e=> alert('Could not save: ' + e.message));
   } else {
@@ -862,9 +1123,16 @@ function addScheduleChange(){
   }
   document.getElementById('scNote').value = '';
 }
+
+function deleteScheduleChange(identifier){
+  scheduleChanges = scheduleChanges.filter((c, i) => (c.id ? c.id !== identifier : i !== identifier));
+  Store.set('scheduleChanges', scheduleChanges);
+  renderScheduleChanges();
+}
+
 if (db){
   db.collection('scheduleChanges').onSnapshot(snapshot=>{
-    scheduleChanges = snapshot.docs.map(d=> d.data());
+    scheduleChanges = snapshot.docs.map(d=> ({ id: d.id, ...d.data() }));
     Store.set('scheduleChanges', scheduleChanges);
     renderScheduleChanges();
   }, err=> console.error(err));
@@ -874,8 +1142,11 @@ if (db){
 
 /* ---------- GPA CALCULATOR ---------- */
 let gpaSubjects = Store.get('gpaSubjects', [
-  { name:'Web Development', obtained:0, total:100 },
-  { name:'C++ Programming', obtained:0, total:100 }
+  { name:'Web Development', credits:3, obtained:85, total:100 },
+  { name:'C++ Programming', credits:4, obtained:78, total:100 },
+  { name:'Mathematics', credits:3, obtained:80, total:100 },
+  { name:'English', credits:2, obtained:75, total:100 },
+  { name:'Islamiat/Ethics', credits:2, obtained:90, total:100 }
 ]);
 
 function renderGpaRows(){
@@ -886,6 +1157,7 @@ function renderGpaRows(){
     row.className = 'gpa-row';
     row.innerHTML = `
       <input type="text" value="${subj.name}" onchange="updateGpaField(${i},'name',this.value)" placeholder="Subject name">
+      <input type="number" min="1" max="6" value="${subj.credits || 3}" onchange="updateGpaField(${i},'credits',this.value)" placeholder="Credits">
       <input type="number" value="${subj.obtained}" onchange="updateGpaField(${i},'obtained',this.value)" placeholder="Obtained">
       <input type="number" value="${subj.total}" onchange="updateGpaField(${i},'total',this.value)" placeholder="Total">
       <button class="ghost" onclick="removeGpaRow(${i})">✕</button>
@@ -894,21 +1166,34 @@ function renderGpaRows(){
   });
   calcGpa();
 }
+
 function updateGpaField(index, field, value){
   gpaSubjects[index][field] = (field === 'name') ? value : Number(value);
   Store.set('gpaSubjects', gpaSubjects);
   calcGpa();
 }
+
 function addGpaRow(){
-  gpaSubjects.push({ name:'New Subject', obtained:0, total:100 });
+  gpaSubjects.push({ name:'New Subject', credits:3, obtained:0, total:100 });
   Store.set('gpaSubjects', gpaSubjects);
   renderGpaRows();
 }
+
 function removeGpaRow(index){
   gpaSubjects.splice(index,1);
   Store.set('gpaSubjects', gpaSubjects);
   renderGpaRows();
 }
+
+function percentToGpaPoint(percent){
+  if (percent >= 80) return 4.0;
+  if (percent >= 70) return 3.5;
+  if (percent >= 60) return 3.0;
+  if (percent >= 50) return 2.5;
+  if (percent >= 40) return 2.0;
+  return 0.0;
+}
+
 function gradeFor(percent){
   if (percent >= 80) return 'A+';
   if (percent >= 70) return 'A';
@@ -917,47 +1202,71 @@ function gradeFor(percent){
   if (percent >= 40) return 'D';
   return 'F';
 }
+
 function calcGpa(){
-  let obtained = 0, total = 0;
-  for (const s of gpaSubjects){ obtained += s.obtained; total += s.total; }
-  const percent = total > 0 ? (obtained/total*100) : 0;
-  document.getElementById('gpaPercent').textContent = percent.toFixed(1) + '%';
-  document.getElementById('gpaGrade').textContent = gradeFor(percent);
+  let obtained = 0, total = 0, totalCredits = 0, weightedPoints = 0;
+  for (const s of gpaSubjects){
+    const cr = s.credits || 3;
+    obtained += s.obtained;
+    total += s.total;
+    const subPercent = s.total > 0 ? (s.obtained / s.total * 100) : 0;
+    weightedPoints += percentToGpaPoint(subPercent) * cr;
+    totalCredits += cr;
+  }
+  const overallPercent = total > 0 ? (obtained / total * 100) : 0;
+  const overallGpa = totalCredits > 0 ? (weightedPoints / totalCredits) : 0;
+
+  document.getElementById('gpaVal').textContent = overallGpa.toFixed(2);
+  document.getElementById('gpaPercent').textContent = overallPercent.toFixed(1) + '%';
+  document.getElementById('gpaGrade').textContent = gradeFor(overallPercent);
   document.getElementById('gpaObtained').textContent = obtained;
   document.getElementById('gpaTotal').textContent = total;
+
+  updateDashboardStats();
 }
-renderGpaRows();
 
 /* ---------- ATTENDANCE ---------- */
-let attendance = Store.get('attendance', {}); // { 'YYYY-MM-DD': 'present' | 'absent' }
+let attendance = Store.get('attendance', {
+  '2025-09-01': 'present',
+  '2025-09-02': 'present'
+});
 
 function todayKey(){
   const d = new Date();
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
+
 function markToday(status){
   attendance[todayKey()] = status;
   Store.set('attendance', attendance);
   renderAttendance();
 }
+
 function renderAttendance(){
   const entries = Object.entries(attendance).sort((a,b)=> b[0].localeCompare(a[0]));
   const presentCount = entries.filter(e => e[1] === 'present').length;
   const absentCount  = entries.filter(e => e[1] === 'absent').length;
   const total = presentCount + absentCount;
-  const percent = total > 0 ? (presentCount/total*100) : 0;
+  const percent = total > 0 ? (presentCount / total * 100) : 0;
 
   document.getElementById('attPresent').textContent = presentCount;
   document.getElementById('attAbsent').textContent = absentCount;
   document.getElementById('attPercent').textContent = percent.toFixed(0) + '%';
 
+  const warnBanner = document.getElementById('attWarningBanner');
+  if (total > 0 && percent < 75) {
+    warnBanner.classList.add('show-warn');
+  } else {
+    warnBanner.classList.remove('show-warn');
+  }
+
   const list = document.getElementById('attList');
   list.innerHTML = '';
   if (entries.length === 0){
-    list.innerHTML = '<div class="empty">No attendance marked yet.</div>';
+    list.innerHTML = '<div class="empty">No attendance entries recorded yet.</div>';
     return;
   }
-  for (const [date, status] of entries.slice(0,14)){
+  for (const [date, status] of entries.slice(0, 14)){
     const item = document.createElement('div');
     item.className = 'att-item';
     item.innerHTML = `
@@ -965,55 +1274,85 @@ function renderAttendance(){
       <span class="att-actions">
         <button class="btn-present ${status==='present'?'active':''}" onclick="setAttendance('${date}','present')">Present</button>
         <button class="btn-absent ${status==='absent'?'active':''}" onclick="setAttendance('${date}','absent')">Absent</button>
+        <button class="btn-icon" style="margin-left:6px;" onclick="deleteAttendance('${date}')">✕</button>
       </span>
     `;
     list.appendChild(item);
   }
+
+  updateDashboardStats();
 }
+
 function setAttendance(date, status){
   attendance[date] = status;
   Store.set('attendance', attendance);
   renderAttendance();
 }
-renderAttendance();
+
+function deleteAttendance(date){
+  delete attendance[date];
+  Store.set('attendance', attendance);
+  renderAttendance();
+}
 
 /* ---------- NOTES ---------- */
-let notes = Store.get('notes', []);
+let notes = Store.get('notes', [
+  { id: 1, title: 'Exam Topics', body: 'HTML Semantics, C++ Loops, Arrays & Functions.', date: 'Sep 2' }
+]);
 
 function renderNotes(){
   const grid = document.getElementById('notesGrid');
   grid.innerHTML = '';
   if (notes.length === 0){
-    grid.innerHTML = '<div class="empty">No notes yet — click "New Note" to add one.</div>';
+    grid.innerHTML = '<div class="empty">No quick notes stored. Click "+ New Note" to create one.</div>';
     return;
   }
   notes.forEach((note, i)=>{
     const card = document.createElement('div');
     card.className = 'note-card';
     card.innerHTML = `
-      <button class="note-del" onclick="deleteNote(${i})">✕</button>
-      <textarea onchange="updateNote(${i}, this.value)" placeholder="Type here…">${note}</textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <input class="note-title" type="text" value="${note.title || 'Untitled'}" onchange="updateNoteTitle(${i}, this.value)" placeholder="Note Title">
+        <button class="btn-icon" onclick="deleteNote(${i})">✕</button>
+      </div>
+      <textarea onchange="updateNoteBody(${i}, this.value)" placeholder="Type details here…">${note.body || ''}</textarea>
+      <div class="note-footer">
+        <span>${note.date || 'Today'}</span>
+      </div>
     `;
     grid.appendChild(card);
   });
 }
-function addNote(){
-  notes.push('');
-  Store.set('notes', notes);
-  renderNotes();
-}
-function updateNote(index, value){
-  notes[index] = value;
-  Store.set('notes', notes);
-}
-function deleteNote(index){
-  notes.splice(index,1);
-  Store.set('notes', notes);
-  renderNotes();
-}
-renderNotes();
 
-/* ---------- CLASSMATES SHARED BOARD (uses shared db/firebaseReady from top of script) ---------- */
+function addNote(){
+  const today = new Date().toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  notes.unshift({ id: Date.now(), title: 'New Note', body: '', date: today });
+  Store.set('notes', notes);
+  renderNotes();
+}
+
+function updateNoteTitle(index, val){
+  notes[index].title = val;
+  Store.set('notes', notes);
+}
+
+function updateNoteBody(index, val){
+  notes[index].body = val;
+  Store.set('notes', notes);
+}
+
+function deleteNote(index){
+  notes.splice(index, 1);
+  Store.set('notes', notes);
+  renderNotes();
+}
+
+/* ---------- CLASSMATES SHARED BOARD & ABSENCE ---------- */
+let localBoardPosts = Store.get('localBoardPosts', [
+  { id: 1, name: 'Fasih', category: 'Update', message: 'Welcome to the DIT Student Hub! Shared notes will sync here.', dueDate: null, timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+]);
+
+let localAbsenceReports = Store.get('localAbsenceReports', []);
 
 function onPostCategoryChange(){
   const category = document.getElementById('postCategory').value;
@@ -1021,27 +1360,59 @@ function onPostCategoryChange(){
 }
 
 function postToBoard(){
-  if (!db){
-    alert('Board setup is not complete yet — see the instructions at the top of this tab.');
-    return;
-  }
   const name = document.getElementById('postName').value.trim() || 'Anonymous';
   const category = document.getElementById('postCategory').value;
   const message = document.getElementById('postMessage').value.trim();
   const dueDate = document.getElementById('postDueDate').value || null;
   if (!message) return;
 
-  db.collection('board').add({
-    name, category, message, dueDate,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{
+  if (db){
+    db.collection('board').add({
+      name, category, message, dueDate,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(()=>{
+      document.getElementById('postMessage').value = '';
+      document.getElementById('postDueDate').value = '';
+    }).catch(e=> alert('Could not post: ' + e.message));
+  } else {
+    const newPost = {
+      id: Date.now(),
+      name, category, message, dueDate,
+      timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+    };
+    localBoardPosts.unshift(newPost);
+    Store.set('localBoardPosts', localBoardPosts);
+    renderLocalBoard();
     document.getElementById('postMessage').value = '';
     document.getElementById('postDueDate').value = '';
-  }).catch(e=> alert('Could not post: ' + e.message));
+  }
 }
 
-function renderBoardEmpty(text){
-  document.getElementById('boardList').innerHTML = `<div class="empty">${text}</div>`;
+function renderLocalBoard(){
+  const list = document.getElementById('boardList');
+  if (localBoardPosts.length === 0){
+    list.innerHTML = '<div class="empty">No posts shared yet. Be the first to share something!</div>';
+    return;
+  }
+  list.innerHTML = '';
+  localBoardPosts.forEach(p=>{
+    const dueLine = p.dueDate ? `<span style="color:var(--amber); font-size:0.78rem;">Due: ${p.dueDate}</span>` : '';
+    const item = document.createElement('div');
+    item.className = 'att-item';
+    item.style.alignItems = 'flex-start';
+    item.style.flexDirection = 'column';
+    item.style.gap = '4px';
+    item.innerHTML = `
+      <div style="display:flex; justify-content:space-between; width:100%;">
+        <span class="badge">${p.category}</span>
+        <span class="date">${p.timestamp || 'just now'}</span>
+      </div>
+      <strong>${p.name}</strong>
+      <span style="color:var(--text); font-size:0.88rem;">${p.message}</span>
+      ${dueLine}
+    `;
+    list.appendChild(item);
+  });
 }
 
 if (db){
@@ -1049,7 +1420,7 @@ if (db){
     .onSnapshot(snapshot=>{
       const list = document.getElementById('boardList');
       if (snapshot.empty){
-        renderBoardEmpty('No posts yet — be the first to share something with the class.');
+        list.innerHTML = '<div class="empty">No posts yet — be the first to share something with the class.</div>';
         return;
       }
       list.innerHTML = '';
@@ -1075,18 +1446,18 @@ if (db){
       });
     }, err=>{
       console.error(err);
-      renderBoardEmpty('Could not load posts — check your Firestore rules/config.');
+      renderLocalBoard();
     });
 } else {
-  renderBoardEmpty('Board is not connected yet — follow the setup steps above, then this will fill in automatically.');
+  renderLocalBoard();
 }
 
-/* ---------- REPORT ABSENCE (shared) ---------- */
+/* ---------- REPORT ABSENCE ---------- */
 function reportAbsence(){
   const name = document.getElementById('absName').value.trim() || 'Anonymous';
   const date = document.getElementById('absDate').value || todayKey();
   const reason = document.getElementById('absReason').value.trim();
-  if (!reason){ alert('Please add a reason.'); return; }
+  if (!reason){ alert('Please enter a reason for the absence.'); return; }
 
   const entry = { name, date, reason };
   if (db){
@@ -1095,18 +1466,45 @@ function reportAbsence(){
       document.getElementById('absReason').value = '';
     }).catch(e=> alert('Could not submit: ' + e.message));
   } else {
-    alert('This needs the Firebase setup (see notice above) before reports are visible to classmates.');
+    entry.id = Date.now();
+    localAbsenceReports.unshift(entry);
+    Store.set('localAbsenceReports', localAbsenceReports);
+    renderLocalAbsences();
+    document.getElementById('absReason').value = '';
   }
 }
-function renderAbsenceEmpty(text){
-  document.getElementById('absList').innerHTML = `<div class="empty">${text}</div>`;
+
+function renderLocalAbsences(){
+  const list = document.getElementById('absList');
+  if (localAbsenceReports.length === 0){
+    list.innerHTML = '<div class="empty">No absence reports submitted.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  localAbsenceReports.forEach(p=>{
+    const item = document.createElement('div');
+    item.className = 'att-item';
+    item.style.alignItems = 'flex-start';
+    item.style.flexDirection = 'column';
+    item.style.gap = '4px';
+    item.style.borderLeft = '3px solid var(--red)';
+    item.innerHTML = `
+      <div style="display:flex; justify-content:space-between; width:100%;">
+        <strong>${p.name}</strong>
+        <span class="date">${p.date}</span>
+      </div>
+      <span style="color:var(--text); font-size:0.88rem;">${p.reason}</span>
+    `;
+    list.appendChild(item);
+  });
 }
+
 if (db){
   db.collection('absences').orderBy('timestamp','desc').limit(30)
     .onSnapshot(snapshot=>{
       const list = document.getElementById('absList');
       if (snapshot.empty){
-        renderAbsenceEmpty('No absence reports right now.');
+        list.innerHTML = '<div class="empty">No absence reports submitted right now.</div>';
         return;
       }
       list.innerHTML = '';
@@ -1129,11 +1527,60 @@ if (db){
       });
     }, err=>{
       console.error(err);
-      renderAbsenceEmpty('Could not load reports — check your Firestore rules/config.');
+      renderLocalAbsences();
     });
 } else {
-  renderAbsenceEmpty('Not connected yet — follow the Firebase setup steps on the Classmates tab.');
+  renderLocalAbsences();
 }
+
+/* ---------- DASHBOARD QUICK STATS SYNC ---------- */
+function updateDashboardStats(){
+  // Tasks
+  const pending = tasks.filter(t => !t.done).length;
+  const completed = tasks.filter(t => t.done).length;
+  const taskPct = tasks.length > 0 ? Math.round((completed / tasks.length) * 100) : 0;
+  const elPending = document.getElementById('statPendingTasks');
+  const elTaskProg = document.getElementById('statTaskProgress');
+  if (elPending) elPending.textContent = pending;
+  if (elTaskProg) elTaskProg.textContent = `${taskPct}% completed`;
+
+  // Attendance
+  const entries = Object.entries(attendance);
+  const presentCount = entries.filter(e => e[1] === 'present').length;
+  const attTotal = entries.length;
+  const attPct = attTotal > 0 ? Math.round((presentCount / attTotal) * 100) : 0;
+  const elAtt = document.getElementById('statAttendance');
+  const elAttStatus = document.getElementById('statAttStatus');
+  if (elAtt) elAtt.textContent = `${attPct}%`;
+  if (elAttStatus) {
+    elAttStatus.textContent = attPct < 75 && attTotal > 0 ? '⚠️ Below 75% PBTE' : 'PBTE Min: 75%';
+    elAttStatus.style.color = attPct < 75 && attTotal > 0 ? 'var(--red)' : 'var(--muted)';
+  }
+
+  // GPA
+  let obtained = 0, total = 0, totalCredits = 0, weightedPoints = 0;
+  for (const s of gpaSubjects){
+    const cr = s.credits || 3;
+    obtained += s.obtained;
+    total += s.total;
+    const subPercent = s.total > 0 ? (s.obtained / s.total * 100) : 0;
+    weightedPoints += percentToGpaPoint(subPercent) * cr;
+    totalCredits += cr;
+  }
+  const overallGpa = totalCredits > 0 ? (weightedPoints / totalCredits) : 0;
+  const overallPercent = total > 0 ? (obtained / total * 100) : 0;
+  const elGpa = document.getElementById('statGPA');
+  const elGrade = document.getElementById('statGrade');
+  if (elGpa) elGpa.textContent = overallGpa.toFixed(2);
+  if (elGrade) elGrade.textContent = `Grade: ${gradeFor(overallPercent)}`;
+}
+
+// Initial renders
+renderTasks();
+renderGpaRows();
+renderAttendance();
+renderNotes();
+updateClock();
 </script>
 
 </body>
