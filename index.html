@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIT Student Hub — Fasih</title>
+<style>
+  /* ============================================================
+     DESIGN TOKENS — Color Psychology Palette (v5, toned down)
+     Dark navy base    -> calm, low eye-strain for long study sessions
+     Steel blue         -> professional, dependable, not flashy (personal tools)
+     Muted cadet teal   -> approachable community feel, still subdued (Classmates)
+     Soft green/amber/red -> desaturated so status colors inform, don't shout
+     ============================================================ */
+  :root{
+    --bg:#0b1120;
+    --bg-alt:#080d1a;
+    --panel:#161f33;
+    --panel-hi:#1c273f;
+    --border:#293349;
+    --accent:#4a6fa5;
+    --accent-dim:#3a5980;
+    --social:#5f9ea0;
+    --social-dim:#4c8183;
+    --green:#5cad82;
+    --amber:#d1a04a;
+    --red:#c97676;
+    --text:#dbe2ee;
+    --muted:#8590a6;
+    --radius:10px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(1200px 500px at 80% -10%, rgba(59,130,246,0.10), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--font);
+    line-height:1.5;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  a{ color:inherit; }
+
+  /* ---------- Header ---------- */
+  header.hero{
+    padding:28px 20px 20px;
+    max-width:1000px;
+    margin:0 auto;
+  }
+  .hero-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .hero-id h1{
+    font-size:1.6rem;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .hero-id p{
+    margin:0;
+    color:var(--muted);
+    font-size:0.92rem;
+  }
+  .clock-box{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px 18px;
+    text-align:right;
+    min-width:180px;
+  }
+  .clock-box .time{
+    font-family:var(--mono);
+    font-size:1.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .clock-box .date{
+    color:var(--muted);
+    font-size:0.8rem;
+    margin-top:2px;
+  }
+
+  /* ---------- Countdown strip ---------- */
+  .countdown{
+    margin-top:18px;
+    background:linear-gradient(135deg, var(--panel), var(--panel-hi));
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .countdown .label{ color:var(--muted); font-size:0.85rem; }
+  .countdown .value{
+    font-family:var(--mono);
+    font-size:1.3rem;
+    color:var(--accent);
+    font-weight:600;
+  }
+  .countdown .status-pill{
+    font-size:0.75rem;
+    padding:4px 10px;
+    border-radius:999px;
+    background:rgba(34,197,94,0.15);
+    color:var(--green);
+    border:1px solid rgba(34,197,94,0.35);
+  }
+  .countdown .status-pill.over{
+    background:rgba(148,163,184,0.12);
+    color:var(--muted);
+    border-color:var(--border);
+  }
+
+  /* ---------- Nav tabs ---------- */
+  nav.tabs{
+    max-width:1000px;
+    margin:22px auto 0;
+    padding:0 20px;
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  nav.tabs button{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--muted);
+    padding:9px 16px;
+    border-radius:8px;
+    font-size:0.85rem;
+    cursor:pointer;
+    transition:background 0.15s, color 0.15s, border-color 0.15s;
+    white-space:nowrap;
+  }
+  nav.tabs button:hover{ color:var(--text); }
+  nav.tabs button.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  nav.tabs button.active[data-view="classmates"]{
+    background:var(--social);
+    border-color:var(--social);
+  }
+
+  main{
+    max-width:1000px;
+    margin:0 auto;
+    padding:20px;
+  }
+  section.view{ display:none; }
+  section.view.active{ display:block; }
+
+  h2.section-title{
+    font-size:1.1rem;
+    margin:0 0 14px;
+    color:var(--text);
+  }
+  h2.section-title span{ color:var(--muted); font-weight:400; font-size:0.85rem; }
+
+  /* ---------- Assignment cards ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+    gap:14px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.18);
+    transition:border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  .card:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.25); border-color:var(--accent); }
+  .card:active{ transform:scale(0.98); }
+  .card.done{ border-color:var(--green); }
+  .card .tag{
+    font-size:0.7rem;
+    color:var(--accent);
+    margin-bottom:6px;
+    display:block;
+  }
+  .card.done .tag{ color:var(--green); }
+  .card h3{ margin:0 0 6px; font-size:1rem; }
+  .card p{ margin:0 0 10px; color:var(--muted); font-size:0.85rem; }
+  .badge{
+    display:inline-block;
+    font-size:0.72rem;
+    padding:3px 10px;
+    border-radius:999px;
+    background:rgba(59,130,246,0.15);
+    color:var(--accent);
+    border:1px solid rgba(59,130,246,0.35);
+  }
+  .card.done .badge{
+    background:rgba(34,197,94,0.15);
+    color:var(--green);
+    border-color:rgba(34,197,94,0.35);
+  }
+
+  .add-row{ display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+  input, select, textarea{
+    background:var(--bg-alt);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:10px;
+    padding:9px 12px;
+    font-family:var(--font);
+    font-size:0.88rem;
+  }
+  input:focus, select:focus, textarea:focus{ outline:1px solid var(--accent); }
+  button.primary{
+    background:var(--accent);
+    border:1px solid var(--accent);
+    color:#fff;
+    border-radius:10px;
+    padding:9px 16px;
+    font-size:0.88rem;
+    cursor:pointer;
+  }
+  button.primary:hover{ background:var(--accent-dim); }
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--muted);
+    border-radius:10px;
+    padding:6px 10px;
+    font-size:0.78rem;
+    cursor:pointer;
+  }
+
+  /* ---------- Timetable ---------- */
+  table.timetable{
+    width:100%;
+    border-collapse:collapse;
+    background:var(--panel);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  table.timetable th, table.timetable td{
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    font-size:0.85rem;
+    text-align:left;
+  }
+  table.timetable th{
+    color:var(--muted);
+    font-weight:600;
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+    background:var(--bg-alt);
+  }
+  table.timetable tr:last-child td{ border-bottom:none; }
+  .subject-webdev{ color:var(--accent); }
+  .subject-cpp{ color:var(--amber); }
+
+  /* ---------- GPA calculator ---------- */
+  .gpa-row{
+    display:grid;
+    grid-template-columns: 1.5fr 1fr 1fr auto;
+    gap:8px;
+    margin-bottom:8px;
+    align-items:center;
+  }
+  .gpa-result{
+    margin-top:16px;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .gpa-result .metric{ text-align:center; }
+  .gpa-result .metric .num{ font-size:1.6rem; font-weight:700; font-family:var(--mono); }
+  .gpa-result .metric .lbl{ color:var(--muted); font-size:0.75rem; margin-top:2px; }
+
+  /* ---------- Notes ---------- */
+  .notes-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+    gap:12px;
+  }
+  .note-card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:14px;
+    position:relative;
+  }
+  .note-card textarea{
+    width:100%;
+    background:transparent;
+    border:none;
+    color:var(--text);
+    resize:vertical;
+    min-height:80px;
+    padding:0;
+    font-size:0.85rem;
+  }
+  .note-card textarea:focus{ outline:none; }
+  .note-del{
+    position:absolute;
+    top:10px; right:10px;
+    background:none;
+    border:none;
+    color:var(--muted);
+    cursor:pointer;
+    font-size:0.9rem;
+  }
+
+  /* ---------- Attendance ---------- */
+  .att-summary{
+    display:flex;
+    gap:14px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .att-summary .metric{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:12px 18px;
+    text-align:center;
+    flex:1;
+    min-width:100px;
+  }
+  .att-summary .num{ font-size:1.4rem; font-weight:700; font-family:var(--mono); }
+  .att-summary .num.good{ color:var(--green); }
+  .att-summary .num.warn{ color:var(--amber); }
+  .att-list{ display:flex; flex-direction:column; gap:8px; }
+  .att-item{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .att-item .date{ font-size:0.85rem; color:var(--muted); font-family:var(--mono); }
+  .att-actions button{
+    border:none;
+    padding:5px 12px;
+    border-radius:8px;
+    font-size:0.75rem;
+    cursor:pointer;
+    margin-left:6px;
+  }
+  .btn-present{ background:rgba(34,197,94,0.15); color:var(--green); }
+  .btn-absent{ background:rgba(239,68,68,0.15); color:var(--red); }
+  .btn-present.active{ background:var(--green); color:#04160a; }
+  .btn-absent.active{ background:var(--red); color:#1a0505; }
+
+  .empty{
+    color:var(--muted);
+    font-size:0.85rem;
+    padding:20px;
+    text-align:center;
+    border:1px dashed var(--border);
+    border-radius:var(--radius);
+  }
+
+  @media (max-width:520px){
+    .gpa-row{ grid-template-columns:1.3fr 1fr 1fr auto; font-size:0.85rem; }
+    .clock-box{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-top">
+    <div class="hero-id">
+      <h1>Fasih's Student Hub</h1>
+      <p>DIT 1st Year · Punjab College, Ayub Park Campus · PBTE</p>
+    </div>
+    <div class="clock-box">
+      <div class="time" id="liveClock">--:--:--</div>
+      <div class="date" id="liveDate">Loading date…</div>
+    </div>
+  </div>
+
+  <div class="countdown">
+    <div>
+      <div class="label">Morning Session — 7:30 AM to 1:00 PM</div>
+      <div class="value" id="countdownValue">Calculating…</div>
+    </div>
+    <div class="status-pill" id="statusPill">—</div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-view="assignments" class="active">Assignments</button>
+  <button data-view="timetable">Timetable</button>
+  <button data-view="gpa">GPA Calculator</button>
+  <button data-view="attendance">Attendance</button>
+  <button data-view="notes">Notes</button>
+  <button data-view="classmates">Classmates</button>
+</nav>
+
+<main>
+
+  <!-- ===================== ASSIGNMENTS ===================== -->
+  <section class="view active" id="view-assignments">
+    <h2 class="section-title">Assignment Tracker <span>tap a card to mark complete</span></h2>
+
+    <div class="add-row">
+      <input type="text" id="taskTitle" placeholder="Task title">
+      <select id="taskSubject">
+        <option value="Web Development">Web Development</option>
+        <option value="C++ Programming">C++ Programming</option>
+      </select>
+      <input type="text" id="taskDue" placeholder="Due (e.g. Fri, 5 Sep)">
+      <button class="primary" onclick="addTask()">Add Task</button>
+    </div>
+
+    <div class="grid" id="taskGrid"></div>
+  </section>
+
+  <!-- ===================== TIMETABLE ===================== -->
+  <section class="view" id="view-timetable">
+    <h2 class="section-title">Weekly Timetable <span>morning shift, 1st year DIT</span></h2>
+    <table class="timetable">
+      <thead>
+        <tr><th>Day</th><th>7:30 – 9:00</th><th>9:00 – 10:30</th><th>10:30 – 12:00</th><th>12:00 – 1:00</th></tr>
+      </thead>
+      <tbody id="timetableBody"></tbody>
+    </table>
+  </section>
+
+  <!-- ===================== GPA CALCULATOR ===================== -->
+  <section class="view" id="view-gpa">
+    <h2 class="section-title">Semester GPA Calculator <span>enter marks obtained / total marks per subject</span></h2>
+
+    <div id="gpaRows"></div>
+    <button class="ghost" onclick="addGpaRow()">+ Add Subject</button>
+
+    <div class="gpa-result">
+      <div class="metric">
+        <div class="num" id="gpaPercent">0%</div>
+        <div class="lbl">Overall %</div>
+      </div>
+      <div class="metric">
+        <div class="num" id="gpaGrade">—</div>
+        <div class="lbl">Grade</div>
+      </div>
+      <div class="metric">
+        <div class="num" id="gpaObtained">0</div>
+        <div class="lbl">Marks Obtained</div>
+      </div>
+      <div class="metric">
+        <div class="num" id="gpaTotal">0</div>
+        <div class="lbl">Total Marks</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ATTENDANCE ===================== -->
+  <section class="view" id="view-attendance">
+    <h2 class="section-title">Attendance Log <span>mark today, track your %</span></h2>
+
+    <div class="att-summary">
+      <div class="metric"><div class="num good" id="attPresent">0</div><div class="lbl">Present</div></div>
+      <div class="metric"><div class="num warn" id="attAbsent">0</div><div class="lbl">Absent</div></div>
+      <div class="metric"><div class="num" id="attPercent">0%</div><div class="lbl">Attendance %</div></div>
+    </div>
+
+    <div class="add-row">
+      <button class="primary" onclick="markToday('present')">Mark Today Present</button>
+      <button class="ghost" onclick="markToday('absent')">Mark Today Absent</button>
+    </div>
+
+    <div class="att-list" id="attList"></div>
+  </section>
+
+  <!-- ===================== NOTES ===================== -->
+  <section class="view" id="view-notes">
+    <h2 class="section-title">Quick Notes <span>saved automatically to this browser</span></h2>
+    <div class="add-row">
+      <button class="primary" onclick="addNote()">+ New Note</button>
+    </div>
+    <div class="notes-grid" id="notesGrid"></div>
+  </section>
+
+  <!-- ===================== CLASSMATES SHARED BOARD ===================== -->
+  <section class="view" id="view-classmates" style="--accent:var(--social); --accent-dim:var(--social-dim);">
+    <h2 class="section-title" style="color:var(--social);">🌐 Classmates Board <span style="color:var(--muted);">visible to everyone with this link</span></h2>
+
+    <div id="fbSetupNotice" class="empty" style="display:none; margin-bottom:16px; text-align:left;">
+      <strong>One-time setup needed:</strong> this board needs a free Firebase project to sync between
+      devices (localStorage alone can't share data between your classmates' phones). Steps:
+      <ol style="margin:10px 0 0; padding-left:20px; color:var(--muted);">
+        <li>Go to <span style="color:var(--accent)">console.firebase.google.com</span> → Create Project (free)</li>
+        <li>Build → Firestore Database → Create database → Start in <em>test mode</em></li>
+        <li>Project settings → General → "Your apps" → Web app (&lt;/&gt;) → copy the config object</li>
+        <li>Paste it into <code>firebaseConfig</code> near the top of the script below</li>
+        <li>Re-upload/host this file (GitHub Pages or Netlify, both free) and share that URL with classmates</li>
+      </ol>
+    </div>
+
+    <div class="add-row">
+      <input type="text" id="postName" placeholder="Your name">
+      <select id="postCategory">
+        <option value="Question">❓ Question</option>
+        <option value="Resource">📎 Resource</option>
+        <option value="Help">🤝 Offering Help</option>
+        <option value="Update">📢 Update</option>
+      </select>
+    </div>
+    <div class="add-row">
+      <textarea id="postMessage" placeholder="Ask something, share a note, or offer help…" style="flex:1; min-height:60px;"></textarea>
+    </div>
+    <div class="add-row">
+      <button class="primary" onclick="postToBoard()">Post to Board</button>
+    </div>
+
+    <div class="att-list" id="boardList" style="margin-top:16px;"></div>
+  </section>
+
+</main>
+
+<!-- Firebase (free tier) — only used for the Classmates shared board.
+     Loaded from Google's CDN, no npm install / no build step needed. -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+
+<script>
+/* ============================================================
+   DIT STUDENT HUB — Module 2 upgrade
+   Concepts used throughout (for PBTE exam revision):
+   - Variables & data types (let/const, string, number, array, object)
+   - Functions (declarations, arrow functions, parameters/return)
+   - Loops (for...of, forEach, map) for repeating structures
+   - Conditionals (if/else, ternary) for state-based logic
+   - DOM manipulation (querySelector, createElement, event listeners)
+   - Objects & Arrays as data structures (task list, timetable, notes)
+   - localStorage for persisting data between browser sessions
+   ============================================================ */
+
+/* ---------- Utility: persistence layer ---------- */
+const Store = {
+  get(key, fallback){
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  },
+  set(key, value){
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+};
+
+/* ---------- Live clock + session countdown ---------- */
+function pad(n){ return n.toString().padStart(2,'0'); }
+
+function updateClock(){
+  const now = new Date();
+  document.getElementById('liveClock').textContent =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  document.getElementById('liveDate').textContent =
+    now.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
+
+  const start = new Date(now); start.setHours(7,30,0,0);
+  const end   = new Date(now); end.setHours(13,0,0,0);
+  const pill = document.getElementById('statusPill');
+  const val  = document.getElementById('countdownValue');
+
+  if (now < start){
+    const diff = start - now;
+    val.textContent = formatDiff(diff) + ' until session starts';
+    pill.textContent = 'Upcoming';
+    pill.classList.remove('over');
+  } else if (now >= start && now <= end){
+    const diff = end - now;
+    val.textContent = formatDiff(diff) + ' remaining in session';
+    pill.textContent = 'In Session';
+    pill.classList.remove('over');
+  } else {
+    val.textContent = 'Session ended for today';
+    pill.textContent = 'Done';
+    pill.classList.add('over');
+  }
+}
+function formatDiff(ms){
+  const totalSec = Math.floor(ms/1000);
+  const h = Math.floor(totalSec/3600);
+  const m = Math.floor((totalSec%3600)/60);
+  const s = totalSec%60;
+  return `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ---------- Tab navigation ---------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.view').forEach(v=>v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+  });
+});
+
+/* ---------- ASSIGNMENTS ---------- */
+let tasks = Store.get('tasks', [
+  { title:'HTML Semantic Tags Assignment', subject:'Web Development', due:'Wed, 3 Sep', done:false },
+  { title:'Loops & Arrays Practice Sheet', subject:'C++ Programming', due:'Thu, 4 Sep', done:false }
+]);
+
+function renderTasks(){
+  const grid = document.getElementById('taskGrid');
+  grid.innerHTML = '';
+  if (tasks.length === 0){
+    grid.innerHTML = '<div class="empty">No tasks yet — add your first assignment above.</div>';
+    return;
+  }
+  tasks.forEach((task, i)=>{
+    const card = document.createElement('div');
+    card.className = 'card' + (task.done ? ' done' : '');
+    card.innerHTML = `
+      <span class="tag">${task.subject}</span>
+      <h3>${task.title}</h3>
+      <p>Due: ${task.due || 'No date set'}</p>
+      <span class="badge">${task.done ? 'Completed ✅' : 'Pending'}</span>
+    `;
+    card.addEventListener('click', ()=> toggleTask(i));
+    grid.appendChild(card);
+  });
+}
+function toggleTask(index){
+  tasks[index].done = !tasks[index].done;
+  Store.set('tasks', tasks);
+  renderTasks();
+}
+function addTask(){
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) return;
+  const subject = document.getElementById('taskSubject').value;
+  const due = document.getElementById('taskDue').value.trim();
+  tasks.push({ title, subject, due, done:false });
+  Store.set('tasks', tasks);
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDue').value = '';
+  renderTasks();
+}
+renderTasks();
+
+/* ---------- TIMETABLE ---------- */
+const timetable = [
+  { day:'Monday',    slots:['Web Development','C++ Programming','Web Development Lab','—'] },
+  { day:'Tuesday',   slots:['C++ Programming','Web Development','C++ Lab','—'] },
+  { day:'Wednesday', slots:['Web Development','English','C++ Programming','—'] },
+  { day:'Thursday',  slots:['C++ Programming','Web Development Lab','Mathematics','—'] },
+  { day:'Friday',    slots:['Web Development','C++ Programming','Islamiat/Ethics','—'] }
+];
+function classForSubject(s){
+  if (s.includes('Web')) return 'subject-webdev';
+  if (s.includes('C++')) return 'subject-cpp';
+  return '';
+}
+function renderTimetable(){
+  const body = document.getElementById('timetableBody');
+  body.innerHTML = '';
+  for (const row of timetable){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${row.day}</strong></td>` +
+      row.slots.map(s => `<td class="${classForSubject(s)}">${s}</td>`).join('');
+    body.appendChild(tr);
+  }
+}
+renderTimetable();
+
+/* ---------- GPA CALCULATOR ---------- */
+let gpaSubjects = Store.get('gpaSubjects', [
+  { name:'Web Development', obtained:0, total:100 },
+  { name:'C++ Programming', obtained:0, total:100 }
+]);
+
+function renderGpaRows(){
+  const container = document.getElementById('gpaRows');
+  container.innerHTML = '';
+  gpaSubjects.forEach((subj, i)=>{
+    const row = document.createElement('div');
+    row.className = 'gpa-row';
+    row.innerHTML = `
+      <input type="text" value="${subj.name}" onchange="updateGpaField(${i},'name',this.value)" placeholder="Subject name">
+      <input type="number" value="${subj.obtained}" onchange="updateGpaField(${i},'obtained',this.value)" placeholder="Obtained">
+      <input type="number" value="${subj.total}" onchange="updateGpaField(${i},'total',this.value)" placeholder="Total">
+      <button class="ghost" onclick="removeGpaRow(${i})">✕</button>
+    `;
+    container.appendChild(row);
+  });
+  calcGpa();
+}
+function updateGpaField(index, field, value){
+  gpaSubjects[index][field] = (field === 'name') ? value : Number(value);
+  Store.set('gpaSubjects', gpaSubjects);
+  calcGpa();
+}
+function addGpaRow(){
+  gpaSubjects.push({ name:'New Subject', obtained:0, total:100 });
+  Store.set('gpaSubjects', gpaSubjects);
+  renderGpaRows();
+}
+function removeGpaRow(index){
+  gpaSubjects.splice(index,1);
+  Store.set('gpaSubjects', gpaSubjects);
+  renderGpaRows();
+}
+function gradeFor(percent){
+  if (percent >= 80) return 'A+';
+  if (percent >= 70) return 'A';
+  if (percent >= 60) return 'B';
+  if (percent >= 50) return 'C';
+  if (percent >= 40) return 'D';
+  return 'F';
+}
+function calcGpa(){
+  let obtained = 0, total = 0;
+  for (const s of gpaSubjects){ obtained += s.obtained; total += s.total; }
+  const percent = total > 0 ? (obtained/total*100) : 0;
+  document.getElementById('gpaPercent').textContent = percent.toFixed(1) + '%';
+  document.getElementById('gpaGrade').textContent = gradeFor(percent);
+  document.getElementById('gpaObtained').textContent = obtained;
+  document.getElementById('gpaTotal').textContent = total;
+}
+renderGpaRows();
+
+/* ---------- ATTENDANCE ---------- */
+let attendance = Store.get('attendance', {}); // { 'YYYY-MM-DD': 'present' | 'absent' }
+
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+}
+function markToday(status){
+  attendance[todayKey()] = status;
+  Store.set('attendance', attendance);
+  renderAttendance();
+}
+function renderAttendance(){
+  const entries = Object.entries(attendance).sort((a,b)=> b[0].localeCompare(a[0]));
+  const presentCount = entries.filter(e => e[1] === 'present').length;
+  const absentCount  = entries.filter(e => e[1] === 'absent').length;
+  const total = presentCount + absentCount;
+  const percent = total > 0 ? (presentCount/total*100) : 0;
+
+  document.getElementById('attPresent').textContent = presentCount;
+  document.getElementById('attAbsent').textContent = absentCount;
+  document.getElementById('attPercent').textContent = percent.toFixed(0) + '%';
+
+  const list = document.getElementById('attList');
+  list.innerHTML = '';
+  if (entries.length === 0){
+    list.innerHTML = '<div class="empty">No attendance marked yet.</div>';
+    return;
+  }
+  for (const [date, status] of entries.slice(0,14)){
+    const item = document.createElement('div');
+    item.className = 'att-item';
+    item.innerHTML = `
+      <span class="date">${date}</span>
+      <span class="att-actions">
+        <button class="btn-present ${status==='present'?'active':''}" onclick="setAttendance('${date}','present')">Present</button>
+        <button class="btn-absent ${status==='absent'?'active':''}" onclick="setAttendance('${date}','absent')">Absent</button>
+      </span>
+    `;
+    list.appendChild(item);
+  }
+}
+function setAttendance(date, status){
+  attendance[date] = status;
+  Store.set('attendance', attendance);
+  renderAttendance();
+}
+renderAttendance();
+
+/* ---------- NOTES ---------- */
+let notes = Store.get('notes', []);
+
+function renderNotes(){
+  const grid = document.getElementById('notesGrid');
+  grid.innerHTML = '';
+  if (notes.length === 0){
+    grid.innerHTML = '<div class="empty">No notes yet — click "New Note" to add one.</div>';
+    return;
+  }
+  notes.forEach((note, i)=>{
+    const card = document.createElement('div');
+    card.className = 'note-card';
+    card.innerHTML = `
+      <button class="note-del" onclick="deleteNote(${i})">✕</button>
+      <textarea onchange="updateNote(${i}, this.value)" placeholder="Type here…">${note}</textarea>
+    `;
+    grid.appendChild(card);
+  });
+}
+function addNote(){
+  notes.push('');
+  Store.set('notes', notes);
+  renderNotes();
+}
+function updateNote(index, value){
+  notes[index] = value;
+  Store.set('notes', notes);
+}
+function deleteNote(index){
+  notes.splice(index,1);
+  Store.set('notes', notes);
+  renderNotes();
+}
+renderNotes();
+
+/* ---------- CLASSMATES SHARED BOARD (Firebase Firestore) ---------- */
+// PASTE YOUR OWN FIREBASE CONFIG HERE (see setup steps shown in the Classmates tab).
+// Leaving this as-is keeps the board in "setup needed" mode — nothing breaks.
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_ID",
+  appId: "PASTE_APP_ID"
+};
+
+let db = null;
+const firebaseReady = firebaseConfig.apiKey !== "PASTE_YOUR_KEY";
+
+if (firebaseReady){
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+  } catch(e){
+    console.error('Firebase init failed:', e);
+  }
+} else {
+  document.getElementById('fbSetupNotice').style.display = 'block';
+}
+
+function postToBoard(){
+  if (!db){
+    alert('Board setup is not complete yet — see the instructions at the top of this tab.');
+    return;
+  }
+  const name = document.getElementById('postName').value.trim() || 'Anonymous';
+  const category = document.getElementById('postCategory').value;
+  const message = document.getElementById('postMessage').value.trim();
+  if (!message) return;
+
+  db.collection('board').add({
+    name, category, message,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    document.getElementById('postMessage').value = '';
+  }).catch(e=> alert('Could not post: ' + e.message));
+}
+
+function renderBoardEmpty(text){
+  document.getElementById('boardList').innerHTML = `<div class="empty">${text}</div>`;
+}
+
+if (db){
+  db.collection('board').orderBy('timestamp','desc').limit(50)
+    .onSnapshot(snapshot=>{
+      const list = document.getElementById('boardList');
+      if (snapshot.empty){
+        renderBoardEmpty('No posts yet — be the first to share something with the class.');
+        return;
+      }
+      list.innerHTML = '';
+      snapshot.forEach(doc=>{
+        const p = doc.data();
+        const when = p.timestamp ? p.timestamp.toDate().toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : 'just now';
+        const item = document.createElement('div');
+        item.className = 'att-item';
+        item.style.alignItems = 'flex-start';
+        item.style.flexDirection = 'column';
+        item.style.gap = '4px';
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; width:100%;">
+            <span class="badge">${p.category}</span>
+            <span class="date">${when}</span>
+          </div>
+          <strong>${p.name}</strong>
+          <span style="color:var(--text); font-size:0.88rem;">${p.message}</span>
+        `;
+        list.appendChild(item);
+      });
+    }, err=>{
+      console.error(err);
+      renderBoardEmpty('Could not load posts — check your Firestore rules/config.');
+    });
+} else {
+  renderBoardEmpty('Board is not connected yet — follow the setup steps above, then this will fill in automatically.');
+}
+</script>
+
+</body>
+</html>
